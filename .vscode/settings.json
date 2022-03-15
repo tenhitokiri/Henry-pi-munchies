@@ -1,7 +1,20 @@
 {
     "cSpell.words": [
+        "adddiets",
+        "addrecipe",
         "Configurar",
+        "createdrecipe",
+        "deleterecipe",
+        "Diettype",
         "Ejemplo",
-        "todos"
+        "filteredrecipe",
+        "findrecipe",
+        "foundrecipes",
+        "intentar",
+        "laprecipe",
+        "newrecipe",
+        "spoonacular",
+        "todos",
+        "updaterecipe"
     ]
 }
