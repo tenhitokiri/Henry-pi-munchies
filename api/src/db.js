@@ -36,7 +36,7 @@ Diettype.belongsToMany(Recipe, {
 });
 Recipe.belongsToMany(Diettype, {
   through: 'RecipeDietType',
-  as: "DietTypes",
+  as: "Diets",
   foreignKey: "Recipe_id",
 });
 

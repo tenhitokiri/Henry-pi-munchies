@@ -1,121 +1,124 @@
 const { Recipe, Diettype, conn } = require("../db.js");
 const router = require('express').Router();
-const { getAlldogs, findDogByName } = require('../functions/index.js');
-let apiDogs = [];
+const { getAllRecipes, findRecipeByName } = require('../functions/index.js');
+let apiRecipes = [];
 
 //Functions
-const findAllDog = async (_, res) => {
-    if (apiDogs.length === 0) {
-        apiDogs = await getAlldogs();
+const findAllRecipes = async (_, res) => {
+    if (apiRecipes.length === 0) {
+        console.log("searching in api...");
+        apiRecipes = await getAllRecipes();
+        let apiRecipesCopy = apiRecipes.map(recipe => {
+            return {
+                id: recipe.id,
+                name: recipe.name,
+                diets: recipe.diets,
+                image_url: recipe.image,
+                imported: recipe.imported
+            }
+        })
+        console.log("searching in db...");
+        let dbRecipes = await Recipe.findAll({
+            include: [{ model: Diettype, as: 'Diets', attributes: ['name'] }],
+            //attributes: ['id', 'name', 'Diets', 'image_url'],
+        });
+        let recipes = dbRecipes.map(recipe => {
+            let dietList = [];
+            if (recipe.diets) {
+                dietList = recipe.diets.map(item => item.name);
+            }
+            let filteredrecipe = {
+                id: recipe.id,
+                name: recipe.name,
+                diet: dietList,
+                weight: recipe.weight,
+                image_url: recipe.image_url,
+            };
+            return filteredrecipe;
+        });
+        let result = [...apiRecipesCopy, ...recipes];
+        return res.status(201).send(result);
     }
-    let apiDogsCopy = apiDogs.map(dog => {
-        return {
-            id: dog.id,
-            name: dog.name,
-            temperament: dog.temperament,
-            weight: dog.weight,
-            image_url: dog.image_url,
-        }
-    })
-    let dbDogs = await Dog.findAll({
-        include: [{ model: Breed, attributes: ['name'] }, { model: Temperament, attributes: ['name'], as: 'temperaments' }],
-        attributes: ['id', 'name', 'life_span', 'weight', 'height', 'image_url'],
-    });
-    let dogs = dbDogs.map(dog => {
-        let temperamentList = [];
-        if (dog.temperaments) {
-            temperamentList = dog.temperaments.map(item => item.name);
-        }
-        let filteredDog = {
-            id: dog.id,
-            name: dog.name,
-            temperament: temperamentList,
-            weight: dog.weight,
-            image_url: dog.image_url,
-        };
-        return filteredDog;
-    });
-    let result = [...apiDogsCopy, ...dogs];
-    res.status(201).send(result);
+    return res.status(201).send(apiRecipes);
 }
 
-const findDogById = async (req, res) => {
-    if (apiDogs.length === 0) {
-        apiDogs = await getAlldogs();
+const findById = async (req, res) => {
+    if (apiRecipes.length === 0) {
+        apiRecipes = await getAllRecipes();
     }
     let id = parseInt(req.params.id);
-    let dog = {};
+    let recipe = {};
     if (id > 990000) {
         console.log("searching in api...");
-        dog = apiDogs.find(dog => dog.id === id);
+        recipe = apiRecipes.find(recipe => recipe.id === id);
     }
     else {
-        dog = await Dog.findByPk(id, {
-            include: [{ model: Breed, attributes: ['name'] }, { model: Temperament, attributes: ['name'], as: 'temperaments' }],
+        recipe = await recipe.findByPk(id, {
+            include: [{ model: Breed, attributes: ['name'] }, { model: diet, attributes: ['name'], as: 'diets' }],
             attributes: ['id', 'name', 'life_span', 'weight', 'height', 'image_url'],
         });
-        dog = {
-            id: dog.id,
-            name: dog.name,
-            temperament: dog.temperaments.map(item => item.name),
-            breed: dog.breed.name,
-            life_span: dog.life_span,
-            weight: dog.weight,
-            height: dog.height,
-            image_url: dog.image_url,
-            imported: dog.imported
+        recipe = {
+            id: recipe.id,
+            name: recipe.name,
+            diet: recipe.diets.map(item => item.name),
+            breed: recipe.breed.name,
+            life_span: recipe.life_span,
+            weight: recipe.weight,
+            height: recipe.height,
+            image_url: recipe.image_url,
+            imported: recipe.imported
         }
     }
-    res.status(201).send(dog);
+    res.status(201).send(recipe);
 }
 
-const findDogName = async (req, res) => {
+const findByName = async (req, res) => {
     //todo: intentar con promise.all
-    if (apiDogs.length === 0) {
-        apiDogs = await getAlldogs();
+    if (apiRecipes.length === 0) {
+        apiRecipes = await getAllRecipes();
     }
     const name = req.query.name.toLowerCase();
-    const apiDogsByName = apiDogs.filter(dog => dog.name.toLowerCase().includes(name));
-    const dog = await Dog.findAll({
+    const apiRecipesByName = apiRecipes.filter(recipe => recipe.name.toLowerCase().includes(name));
+    const recipe = await recipe.findAll({
         where: {
-            name: conn.where(conn.fn('LOWER', conn.col('dog.name')), 'LIKE', '%' + name + '%')
+            name: conn.where(conn.fn('LOWER', conn.col('recipe.name')), 'LIKE', '%' + name + '%')
         },
-        include: [{ model: Breed, attributes: ['name'], as: 'breed' }, { model: Temperament, attributes: ['name'], as: 'temperaments' }],
+        include: [{ model: Breed, attributes: ['name'], as: 'breed' }, { model: diet, attributes: ['name'], as: 'diets' }],
         attributes: ['id', 'name', 'life_span', 'weight', 'height', 'image_url'],
 
     });
-    let dogs = dog.map(dog => {
-        let temperamentList = [];
-        if (dog.temperaments) {
-            temperamentList = dog.temperaments.map(item => item.name);
+    let recipes = recipe.map(recipe => {
+        let dietList = [];
+        if (recipe.diets) {
+            dietList = recipe.diets.map(item => item.name);
         }
-        let filteredDog = {
-            id: dog.id,
-            name: dog.name,
-            temperament: temperamentList,
-            breed: dog.breed.name,
-            life_span: dog.life_span,
-            weight: dog.weight,
-            height: dog.height,
-            image_url: dog.image_url,
-            imported: dog.imported
+        let filteredrecipe = {
+            id: recipe.id,
+            name: recipe.name,
+            diet: dietList,
+            breed: recipe.breed.name,
+            life_span: recipe.life_span,
+            weight: recipe.weight,
+            height: recipe.height,
+            image_url: recipe.image_url,
+            imported: recipe.imported
         };
-        return filteredDog;
+        return filteredrecipe;
     });
-    let result = [...apiDogsByName, ...dogs];
+    let result = [...apiRecipesByName, ...recipes];
     if (result.length === 0) {
-        res.status(404).send("Dog not found");
+        res.status(404).send("recipe not found");
     }
     else {
         res.status(201).send(result);
     }
 }
 
-const addDog = async (req, res) => {
+const addRecipe = async (req, res) => {
     const {
-        temperament
+        diet
     } = req.body;
-    let newDog = {
+    let newrecipe = {
         name: req.body.name,
         breedId: req.body.breedId,
         life_span: req.body.life_span,
@@ -125,46 +128,46 @@ const addDog = async (req, res) => {
         imported: false
     }
     try {
-        let createdDog = await Dog.create(newDog);
-        await createdDog.addTemperaments(temperament)
-        newDog = {
-            ...newDog,
-            temperament
+        let createdrecipe = await recipe.create(newrecipe);
+        await createdrecipe.adddiets(diet)
+        newrecipe = {
+            ...newrecipe,
+            diet
         }
-        res.status(201).send(newDog)
+        res.status(201).send(newrecipe)
     }
     catch (err) {
         res.status(400).send(err)
     }
 }
 
-const updateDog = async (req, res) => {
+const updateRecipe = async (req, res) => {
     const { name, id } = req.body;
     console.log(`name: ${name}`);
     console.log(`id: ${id}`);
-    const dog = await Dog.findByPk(id);
-    if (dog) {
-        dog.name = name;
-        dog.save();
-        res.status(201).send(dog);
+    const recipe = await recipe.findByPk(id);
+    if (recipe) {
+        recipe.name = name;
+        recipe.save();
+        res.status(201).send(recipe);
     } else {
-        res.status(404).send('dog not found');
+        res.status(404).send('recipe not found');
     }
 }
 
-const deleteDog = async (req, res) => {
+const deleteRecipe = async (req, res) => {
     const id = req.params.id;
-    const dog = await Dog.destroy({ where: { id } })
+    const recipe = await recipe.destroy({ where: { id } })
         .then(res.sendStatus(202))
         .catch(err => res.status(400).send(err));
 }
 
 //Routes
-router.get('/name/', findDogName);
-router.get('/', findAllDog);
-router.get('/:id', findDogById);
-router.post('/', addDog);
-router.put('/', updateDog);
-router.delete('/:id', deleteDog);
+router.get('/name/', findByName);
+router.get('/', findAllRecipes);
+router.get('/:id', findById);
+router.post('/', addRecipe);
+router.put('/', updateRecipe);
+router.delete('/:id', deleteRecipe);
 
 module.exports = router;

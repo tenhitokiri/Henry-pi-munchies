@@ -5,7 +5,6 @@ const { API_KEY } = process.env;
 const axios = require('axios');
 const recipeSlice = process.env.RECIPE_SLICE || 100;
 const URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=${recipeSlice}`;
-let diets = [];
 
 const uniq = (list) => {
     var seen = {};
@@ -14,99 +13,84 @@ const uniq = (list) => {
     });
 }
 
-let populateDietTypes = async () => {
+const uniqDiets = (recipe) => {
+    console.log(`filtering unique types for recipe: ${recipe.title}`);
+    let uniqDietList = [];
+    if (recipe.diets) {
+        uniqDietList = recipe.diets.map(item => item.trim());
+    }
+    if (recipe.vegetarian) uniqDietList = [...uniqDietList, "vegetarian"];
+    if (recipe.vegan) uniqDietList = [...uniqDietList, "vegetarian"];
+    if (recipe.glutenFree) uniqDietList = [...uniqDietList, "gluten free"];
+
+    uniqDietList = uniq(uniqDietList);
+    return uniqDietList;
+}
+
+const populateDietTypes = async () => {
+    let uniqDietList = [];
+    let dietList = [];
     await axios
         .get(URL)
         .then(response => {
-            console.log("fetching recipes...");
-            console.log(`found ${response.data.results.length} recipes`);
-
             recipes = response.data.results.map(recipe => {
-                if (recipe.diets) {
-                    let dietList = recipe.diets.map(item => item.trim());
-                    diets = [...diets, ...dietList];
-                }
+                dietList = [...dietList, ...uniqDiets(recipe)];
             });
-
-            diets = uniq(diets);
-            console.log("unique diets");
-            console.log(diets);
+            uniqDietList = uniq(dietList);
         })
         .catch(error => {
             console.log(error);
         });
-    let dietsDb = await Diettype.bulkCreate(diets.map(diet => {
+    let dietsDb = await Diettype.bulkCreate(uniqDietList.map(diet => {
         return {
             name: diet
         }
     }
     ));
-
 }
 
-let getAllRecipes = async () => {
+const trimRecipes = foundRecipes => {
     console.log("fetching recipes...");
-    const res = await axios.get(URL)
-        .then(foundrecipes => {
-            foundrecipes = foundrecipes.data.slice(0, recipeSlice - 1).map(recipe => {
-                let dietList = [];
-                if (recipe.diets) {
-                    dietList = recipe.diets.split(',');
-                    dietList = dietList.map(item => item.trim());
-                }
-                let id = parseInt(recipe.id) + 9000000
+    console.log(`found ${foundRecipes.data.results.length} recipes`);
+    foundRecipes = foundRecipes.data.results.map(recipe => {
+        console.log(`recipe: ${recipe}`);
+        console.log(recipe);
+        let uniqDietList = uniqDiets(recipe);
 
-                let filteredrecipe = {
-                    id,
-                    name: recipe.title,
-                    diets: dietList,
-                    summary: recipe.summary,
-                    healthScore: recipe.healthScore,
-                    spoonacularScore: recipe.spoonacularScore,
-                    steps: recipe.steps,
-                    image_url: recipe.image,
-                    imported: true
-                }
-                return filteredrecipe;
-            });
-            console.log("recipes fetched");
-            console.log(foundrecipes);
-            return foundrecipes;
+        let id = parseInt(recipe.id) + 9000000
+        let filteredRecipe = {
+            id,
+            name: recipe.name,
+            diets: uniqDietList,
+            summary: recipe.summary,
+            healthScore: recipe.healthScore,
+            spoonacularScore: recipe.spoonacularScore,
+            steps: recipe.analyzedInstructions,
+            image_url: recipe.image,
+            imported: true
         }
-        )
+        return filteredRecipe;
+    });
+    return foundRecipes;
+}
+
+const getAllRecipes = async () => {
+    const res = await axios.get(URL)
+        .then(trimRecipes)
         .catch(error => {
             console.log(error);
             return error;
         });
+    return res
 }
 
-
 const findRecipeByName = async (name) => {
-    const res = await axios.get(`${URL}&q=${name}`)
-    let foundrecipes = res.data
-    foundrecipes = foundrecipes.map(recipe => {
-        let dietList = [];
-        if (recipe.diets) {
-            dietList = recipe.diets.split(',');
-            dietList = dietList.map(item => item.trim());
-        }
-        let weight = recipe.weight.metric;
-        let height = recipe.height.metric;
-        let id = parseInt(recipe.id) + 990000
-        let filteredrecipe = {
-            id,
-            name: recipe.name,
-            diets: dietList,
-            diet: recipe.diet_group,
-            life_span: recipe.life_span,
-            weight,
-            height,
-            image_url: recipe.image.url,
-            imported: true
-        }
-        return filteredrecipe;
-    });
-    return foundrecipes;
+    const res = await axios.get(`${URL}&query=${name}`)
+        .then(trimRecipes)
+        .catch(error => {
+            console.log(error);
+            return error;
+        });
 }
 
 module.exports = {
@@ -114,31 +98,3 @@ module.exports = {
     findRecipeByName,
     populateDietTypes
 }
-
-
-/* eslint-disable
-  {
-"bred_for": "Small rodent hunting, laprecipe",
-"diet_group": "Toy",
-"height": {
-"imperial": "9 - 11.5",
-"metric": "23 - 29"
-},
-"id": 1,
-"image": {
-"height": 1199,
-"id": "BJa4kxc4X",
-"url": "https://cdn2.therecipeapi.com/images/BJa4kxc4X.jpg",
-"width": 1600
-},
-"life_span": "10 - 12 years",
-"name": "Affenpinscher",
-"origin": "Germany, France",
-"reference_image_id": "BJa4kxc4X",
-"diets": "Stubborn, Curious, Playful, Adventurous, Active, Fun-loving",
-"weight": {
-"imperial": "6 - 13",
-"metric": "3 - 6"
-}
-},
-*/
