@@ -3,7 +3,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
-const { populateDietTypes } = require('./functions/');
+const { populateDiets } = require('./functions/dietFunctions.js');
+require('dotenv').config();
+const { FORCE } = process.env;
+
 
 require('./db.js');
 
@@ -33,6 +36,7 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.status(status).send(message);
 });
 
-//populateDietTypes();
+//console.log(`Generating new data... cuz ${FORCE}`);
+//populateDiets();
 
 module.exports = server 

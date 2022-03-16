@@ -19,12 +19,14 @@
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const server = require('./src/app.js');
 const { conn } = require('./src/db.js');
+require('dotenv').config();
 const port = process.env.PORT || 3001
-const force = process.env.FORCE || true;
+const sync = process.env.FORCE || false;
 
 // Syncing all the models at once.
-conn.sync({ force }).then(() => {
+//conn.sync({ force: sync }).then(() => {
+conn.sync().then(() => {
   server.listen(port, () => {
-    console.log(`Server running in port ${port}`); // eslint-disable-line no-console
+    console.log(`Server running in port ${port} with DB deleting: ${sync}`); // eslint-disable-line no-console
   });
 });

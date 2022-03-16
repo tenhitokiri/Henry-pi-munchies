@@ -26,16 +26,16 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Recipe, Diettype } = sequelize.models;
+const { Recipe, Diet } = sequelize.models;
 
 // Aca vendrian las relaciones
-Diettype.belongsToMany(Recipe, {
-  through: 'RecipeDietType',
+Diet.belongsToMany(Recipe, {
+  through: 'RecipeDiet',
   as: "Recipes",
-  foreignKey: "DietType_id",
+  foreignKey: "Diet_id",
 });
-Recipe.belongsToMany(Diettype, {
-  through: 'RecipeDietType',
+Recipe.belongsToMany(Diet, {
+  through: 'RecipeDiet',
   as: "Diets",
   foreignKey: "Recipe_id",
 });
