@@ -1,7 +1,7 @@
 const { Recipe, Diet, conn } = require("../db.js");
 require('dotenv').config();
 const { API_KEY } = process.env;
-const { uniqDiets } = require('./dietFunctions.js');
+const { uniqDiets, findDietNames } = require('./dietFunctions.js');
 const axios = require('axios');
 const recipeSlice = process.env.RECIPE_SLICE || 100;
 const URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=${recipeSlice}`;
@@ -141,7 +141,7 @@ const postRecipe = async (req, res) => {
         newRecipe = {
             ...newRecipe,
             id: createdrecipe.id,
-            diets
+            diets: findDietNames(diets)
         }
         res.status(201).send(newRecipe)
     }
@@ -161,24 +161,52 @@ const updateRecipe = async (req, res) => {
         steps,
         image
     } = req.body;
+    let results;
+    if (req.body.id < 9000000) {
+        let recipe = await Recipe.findOne({
+            where: { id: req.body.id },
+            include: [{
+                model: Diet,
+                as: 'Diets'
+            }]
+        }).then(recipe => {
+            recipe.name = name;
+            recipe.summary = summary;
+            recipe.healthScore = healthScore;
+            recipe.spoonacularScore = spoonacularScore;
+            recipe.steps = steps;
+            recipe.image = image;
+            recipe.setDiets(diets);
+            recipe.save();
 
-    let recipe = await Recipe.findOne({
-        where: { id: req.body.id },
-        include: [{
-            model: Diet,
-            as: 'Diets'
-        }]
-    }).then(recipe => {
+            results = {
+                id: recipe.id,
+                name: recipe.name,
+                summary: recipe.summary,
+                healthScore: recipe.healthScore,
+                spoonacularScore: recipe.spoonacularScore,
+                steps: recipe.steps,
+                image: recipe.image,
+                diets: findDietNames(diets)
+            }
+            return results;
+            //res.status(201).send(results);
+        })
+            .catch(err => {
+                console.log(err);
+                res.status(400).send(err);
+            });
+    }
+    else {
+        let recipe = await apiRecipes.find(recipe => recipe.id === req.body.id);
         recipe.name = name;
         recipe.summary = summary;
         recipe.healthScore = healthScore;
         recipe.spoonacularScore = spoonacularScore;
         recipe.steps = steps;
         recipe.image = image;
-        recipe.setDiets(diets);
-        recipe.save();
-
-        let results = {
+        //        recipe.setDiets(diets);
+        results = {
             id: recipe.id,
             name: recipe.name,
             summary: recipe.summary,
@@ -188,27 +216,29 @@ const updateRecipe = async (req, res) => {
             image: recipe.image,
             diets
         }
-
-        res.status(201).send(results);
-    })
-        .catch(err => {
-            console.log(err);
-            res.status(400).send(err);
-        });
+        return results;
+    }
+    res.status(201).send(results);
 }
 
 
 const deleteRecipe = async (req, res) => {
     const id = req.params.id;
-    const recipe = await Recipe.destroy({ where: { id } })
-        .then(result => {
-            console.log(result);
-            return res.status(201).send(`recipe with id ${id} deleted`)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(400).send(err)
-        });
+    if (id < 9000000) {
+        const recipe = await Recipe.destroy({ where: { id } })
+            .then(result => {
+                console.log(result);
+                return res.status(201).send(`recipe with id ${id} deleted`)
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(400).send(err)
+            });
+    }
+    else {
+        apiRecipes = apiRecipes.filter(recipe => recipe.id !== id);
+        res.status(201).send(`recipe with id ${id} deleted`);
+    }
 }
 
 module.exports = {

@@ -7,14 +7,14 @@ const recipeSlice = process.env.RECIPE_SLICE || 100;
 const URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=${recipeSlice}`;
 let apiRecipes = [];
 
-const uniqDiets = (recipe) => {
+const uniqDiets = (Diet) => {
     let uniqDietList = [];
-    if (recipe.diets) {
-        uniqDietList = recipe.diets.map(item => item.trim());
+    if (Diet.diets) {
+        uniqDietList = Diet.diets.map(item => item.trim());
     }
-    if (recipe.vegetarian) uniqDietList = [...uniqDietList, "vegetarian"];
-    if (recipe.vegan) uniqDietList = [...uniqDietList, "vegetarian"];
-    if (recipe.glutenFree) uniqDietList = [...uniqDietList, "gluten free"];
+    if (Diet.vegetarian) uniqDietList = [...uniqDietList, "vegetarian"];
+    if (Diet.vegan) uniqDietList = [...uniqDietList, "vegetarian"];
+    if (Diet.glutenFree) uniqDietList = [...uniqDietList, "gluten free"];
 
     uniqDietList = uniq(uniqDietList);
     return uniqDietList;
@@ -26,8 +26,8 @@ const populateDiets = async () => {
     await axios
         .get(URL)
         .then(response => {
-            recipes = response.data.results.map(recipe => {
-                dietList = [...dietList, ...uniqDiets(recipe)];
+            recipes = response.data.results.map(Diet => {
+                dietList = [...dietList, ...uniqDiets(Diet)];
             });
             uniqDietList = uniq(dietList);
         })
@@ -42,132 +42,92 @@ const populateDiets = async () => {
     ));
 }
 
-const findById = async (req, res) => {
-    if (apiRecipes.length === 0) {
-        apiRecipes = await getAllRecipes();
+const findDietById = async (req, res) => {
+    let diet = await Diet.findByPk(id);
+    diet = {
+        id: Diet.id,
+        name: Diet.name,
     }
-    let id = parseInt(req.params.id);
-    let recipe = {};
-    if (id > 990000) {
-        console.log("searching in api...");
-        recipe = apiRecipes.find(recipe => recipe.id === id);
-    }
-    else {
-        recipe = await recipe.findByPk(id, {
-            include: [{ model: Breed, attributes: ['name'] }, { model: diet, attributes: ['name'], as: 'diets' }],
-            attributes: ['id', 'name', 'life_span', 'weight', 'height', 'image_url'],
-        });
-        recipe = {
-            id: recipe.id,
-            name: recipe.name,
-            diet: recipe.diets.map(item => item.name),
-            breed: recipe.breed.name,
-            life_span: recipe.life_span,
-            weight: recipe.weight,
-            height: recipe.height,
-            image_url: recipe.image_url,
-            imported: recipe.imported
-        }
-    }
-    res.status(201).send(recipe);
+    res.status(201).send(Diet);
 }
 
-const findByName = async (req, res) => {
-    //todo: intentar con promise.all
-    if (apiRecipes.length === 0) {
-        apiRecipes = await getAllRecipes();
-    }
-    const name = req.query.name.toLowerCase();
-    const apiRecipesByName = apiRecipes.filter(recipe => recipe.name.toLowerCase().includes(name));
-    const recipe = await recipe.findAll({
-        where: {
-            name: conn.where(conn.fn('LOWER', conn.col('recipe.name')), 'LIKE', '%' + name + '%')
-        },
-        include: [{ model: Breed, attributes: ['name'], as: 'breed' }, { model: diet, attributes: ['name'], as: 'diets' }],
-        attributes: ['id', 'name', 'life_span', 'weight', 'height', 'image_url'],
-
-    });
-    let recipes = recipe.map(recipe => {
-        let dietList = [];
-        if (recipe.diets) {
-            dietList = recipe.diets.map(item => item.name);
+const findAllDiets = async () => {
+    let diets = await Diet.findAll();
+    diets = diets.map(diet => {
+        return {
+            id: diet.id,
+            name: diet.name
         }
-        let filteredrecipe = {
-            id: recipe.id,
-            name: recipe.name,
-            diet: dietList,
-            breed: recipe.breed.name,
-            life_span: recipe.life_span,
-            weight: recipe.weight,
-            height: recipe.height,
-            image_url: recipe.image_url,
-            imported: recipe.imported
-        };
-        return filteredrecipe;
-    });
-    let result = [...apiRecipesByName, ...recipes];
-    if (result.length === 0) {
-        res.status(404).send("recipe not found");
-    }
-    else {
-        res.status(201).send(result);
-    }
+    })
+    return diets;
 }
 
-const addRecipe = async (req, res) => {
+const findDietNames = async (diets) => {
+    let dietNames = [];
+    let allDietNames = await findAllDiets();
+    diets.forEach(diet => {
+        allDietNames.forEach(dietName => {
+            if (diet.id === dietName.id) {
+                dietNames.push(dietName.name);
+            }
+        })
+    })
+    return dietNames;
+}
+
+const getDiets = async (req, res) => {
+    let diets = await findAllDiets();
+    res.status(201).send(diets);
+}
+
+const addDiet = async (req, res) => {
     const {
-        diet
+        name
     } = req.body;
-    let newrecipe = {
-        name: req.body.name,
-        breedId: req.body.breedId,
-        life_span: req.body.life_span,
-        weight: req.body.weight,
-        height: req.body.height,
-        image_url: req.body.image_url,
-        imported: false
-    }
     try {
-        let createdrecipe = await recipe.create(newrecipe);
-        await createdrecipe.adddiets(diet)
-        newrecipe = {
-            ...newrecipe,
-            diet
+        let createdDiet = await Diet.create(name);
+        newDiet = {
+            id: createdDiet.id,
+            name: createdDiet.name
         }
-        res.status(201).send(newrecipe)
+        return res.status(201).send(newDiet)
     }
     catch (err) {
-        res.status(400).send(err)
+        return res.status(400).send(err)
     }
 }
 
-const updateRecipe = async (req, res) => {
+const updateDiet = async (req, res) => {
     const { name, id } = req.body;
     console.log(`name: ${name}`);
     console.log(`id: ${id}`);
-    const recipe = await recipe.findByPk(id);
-    if (recipe) {
-        recipe.name = name;
-        recipe.save();
-        res.status(201).send(recipe);
-    } else {
-        res.status(404).send('recipe not found');
-    }
+    const diet = await Diet.findByPk(id).then(diet => {
+        diet.name = name;
+        diet.save();
+        return diet;
+    })
+        .catch(err => {
+            console.log(err);
+            return res.status(400).send(err);
+        });
+    res.status(201).send(diet);
 }
 
-const deleteRecipe = async (req, res) => {
+const deleteDiet = async (req, res) => {
     const id = req.params.id;
-    const recipe = await recipe.destroy({ where: { id } })
-        .then(res.sendStatus(202))
+    const diet = await Diet.destroy({ where: { id } })
+        .then(res.status(201).send(`Diet with id ${id} deleted`))
         .catch(err => res.status(400).send(err));
 }
 
 module.exports = {
     uniqDiets,
     populateDiets,
-    findByName,
-    findById,
-    addRecipe,
-    updateRecipe,
-    deleteRecipe
+    findDietById,
+    findDietNames,
+    findAllDiets,
+    getDiets,
+    addDiet,
+    updateDiet,
+    deleteDiet
 }
