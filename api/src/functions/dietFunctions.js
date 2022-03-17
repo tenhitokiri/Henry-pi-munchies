@@ -1,11 +1,10 @@
-const { Diet, conn } = require("../db.js");
+const { Diet } = require("../db.js");
 require('dotenv').config();
 const { API_KEY } = process.env;
 const { uniq } = require('./index.js');
 const axios = require('axios');
 const recipeSlice = process.env.RECIPE_SLICE || 100;
 const URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=${recipeSlice}`;
-let apiRecipes = [];
 
 const uniqDiets = (Diet) => {
     let uniqDietList = [];
