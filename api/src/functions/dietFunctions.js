@@ -66,7 +66,7 @@ const findDietNames = async (diets) => {
     let allDietNames = await findAllDiets();
     diets.forEach(diet => {
         allDietNames.forEach(dietName => {
-            if (diet.id === dietName.id) {
+            if (diet === dietName.id) {
                 dietNames.push(dietName.name);
             }
         })
