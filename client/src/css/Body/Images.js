@@ -5,7 +5,7 @@ export const BgImage = styled.div`
     background-image: url(${background});
     background-size: cover;
     background-position: center;
-    background-repeat: repeat;
+    background-repeat: no-repeat;
     background-position: right 0; 
     position: absolute;
     top: 0;
@@ -22,16 +22,20 @@ export const ImageBoxStyle = styled.div`
     width: ${props => props.width ? props.width : "auto"};
     height: ${props => props.height ? props.height : "auto"};
     overflow: hidden;
+
     img {
         width: ${props => props.width ? props.width : "auto"};
         height: ${props => props.height ? props.height : "auto"};
-            border-radius: 10px ;
+        border-radius: 10px ;
+    }
+    img: hover {
+        opacity: 0.8;
     }
     @media (max-width: 768px) {
         img {
             width: ${props => props.width ? props.width / 2 : "auto"};
             height: ${props => props.height ? props.height / 2 : "auto"};
-                border-radius: 5px ;
+            border-radius: 5px ;
         }
 
     }

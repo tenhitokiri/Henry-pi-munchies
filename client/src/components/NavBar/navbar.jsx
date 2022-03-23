@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import cooking from '../../images/cooking.png'
 import { Link } from 'react-router-dom';
 import { NavContainer, LeftContainer, RightContainer, BurgerNav } from '../../css/Header/Header.js'
-import useClickOutside from '../../hooks/UseClickOutside.jsx';
+//import useClickOutside from '../../hooks/UseClickOutside.jsx';
 import SearchFoodName from "../Search/SearchFoodName.jsx"
 
 const NavBar = () => {

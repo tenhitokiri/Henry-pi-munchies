@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Breeds = () => {
+const Diets = () => {
     return (
-        <div>Breeds</div>
+        <div>Diets</div>
     )
 }
 
-export default Breeds
+export default Diets

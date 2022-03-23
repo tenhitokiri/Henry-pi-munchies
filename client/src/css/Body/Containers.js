@@ -157,7 +157,7 @@ border-radius: 10px;
 flex-direction: ${props => props.direction ? props.direction : 'column'};
 align-items: ${props => props.align || 'center'}; ;
 justify-content: ${props => props.justify || 'space-between'};
-width: ${props => props.width ? props.width : "auto"};
+width: ${props => props.width ? props.width : "100%"};
 min-height: ${props => props.height ? props.height : "auto"};
 z-index: ${props => props.zIndex ? props.zIndex : "auto"};
 background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
@@ -173,8 +173,6 @@ padding: ${props => props.padding ? props.padding : "0"};
 export const HeaderContainer = styled.div`
 position: sticky;
 display: flex;
-align-items: center;
-justify-content: space-between;
 width: 100%;    
 border-radius: 10px;
 
@@ -185,6 +183,7 @@ min-height: ${props => props.height ? props.height : "auto"};
 background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
 drop-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
 box-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
+font-color: ${props => solidColor[props.fontColor] ? solidColor[props.fontColor] : "black"};
 
 div {
     display: flex;
@@ -205,6 +204,13 @@ h2 {
     font-weight: bold;
     color: ${props => solidColor[props.fontColor] ? solidColor[props.fontColor] : "white"};
     text-decoration: none;
+}
+p {
+    font-size: 1em;
+    font-weight: bold;
+    color: ${props => solidColor[props.fontColor] ? solidColor[props.fontColor] : "white"};
+    text-decoration: none;
+    padding: 0 1em;
 }
 `;
 
@@ -231,7 +237,7 @@ div {
 
 export const AppContainer = styled.div`
     background-color: ${solidColor["color-3"]};
-    min-height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Containers.js'
+import { MainContainer } from '../../css/Body/Containers.js'
 
 
 const About = () => {

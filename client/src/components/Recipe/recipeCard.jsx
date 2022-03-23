@@ -1,27 +1,27 @@
 import React from 'react'
-import { DogCardStyle, CardHeaderStyle, CardBodyStyle } from '../../css/Body/Dog.js'
+import { RecipeCardStyle, CardHeaderStyle, CardBodyStyle } from '../../css/Body/Containers.js'
 import { Link } from 'react-router-dom'
 
-const DogCard = ({ dog }) => {
-    const temperaments = dog.temperament ? dog.temperament.map((temperament, index) => <li>{temperament}</li>) : null
+const RecipeCard = ({ recipe }) => {
+    const diets = recipe.temperament ? recipe.temperament.map((temperament, index) => <li>{temperament}</li>) : null
     return (
-        <DogCardStyle>
+        <RecipeCardStyle>
             <CardHeaderStyle>
-                <img src={dog.image_url} alt={dog.name} />
+                <img src={recipe.image_url} alt={recipe.name} />
             </CardHeaderStyle>
             <CardBodyStyle >
                 <h2 >
-                    <Link to={`/dogs/${dog.id}`}>{dog.name}</Link>
+                    <Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                 </h2>
-                <h3>Weight: {dog.weight} Pounds</h3>
-                <h3>Temperaments:
+                <h3>Weight: {recipe.weight} Pounds</h3>
+                <h3>diets:
                 </h3>
                 <ul>
-                    {temperaments}
+                    {diets}
                 </ul>
             </CardBodyStyle>
-        </DogCardStyle>
+        </RecipeCardStyle>
     )
 }
 
-export default DogCard
+export default RecipeCard
