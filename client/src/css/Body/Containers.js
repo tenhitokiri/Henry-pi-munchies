@@ -175,7 +175,6 @@ position: sticky;
 display: flex;
 width: 100%;    
 border-radius: 10px;
-
 flex-direction: ${props => props.direction || 'column'};
 align-items: ${props => props.align || 'center'}; ;
 justify-content: ${props => props.justify || 'space-between'};

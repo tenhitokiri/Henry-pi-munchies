@@ -1,13 +1,13 @@
 import React from 'react'
 import DogCard from './DogCard.jsx'
-import { DogListStyle } from '../../css/Body/Dog.js'
+import { recipeListStyle } from '../../css/Body/Dog.js'
 
-const DogsPaging = ({ dogList, pageSize, total, orderBy }) => {
-    const listMarkup = dogList.length > 0 ? (dogList.map(dog => <DogCard key={dog.id} dog={dog} />)) : (<p>No dogs found</p>)
+const DogsPaging = ({ recipeList, pageSize, total, orderBy }) => {
+    const listMarkup = recipeList.length > 0 ? (recipeList.map(dog => <DogCard key={dog.id} dog={dog} />)) : (<p>No dogs found</p>)
     return (
-        <DogListStyle>
+        <recipeListStyle>
             {listMarkup}
-        </DogListStyle>
+        </recipeListStyle>
     )
 }
 export default DogsPaging

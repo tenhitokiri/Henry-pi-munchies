@@ -33,13 +33,18 @@ export const Button = styled.button`
   height: ${props => props.height ? props.height : "auto"};
   width: ${props => props.width ? props.width : "auto"};
 
-  font-size: 1em;
-  margin: 1em;
-  padding: 0.25em 1em;
-  border: 2px solid ${props => solidColor[props.color] ? solidColor[props.color] : "white"};;
+  font-size: 1rem;
+  margin: 1rem;
+  padding: 0.25rem 1rem;
+  border: 2px solid ${props => solidColor[props.color] ? solidColor[props.color] : "transparent"};;
   border-radius: 3px;
   transition: 0.5s all ease-out;
   cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  align-items: center;
+  padding-right: 10px;
+  text-decoration: none;
   &:hover {
     background: ${props => solidColor[props.color] ? solidColor[props.color] : "white"};
     color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "black"};

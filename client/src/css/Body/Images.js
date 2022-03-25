@@ -1,15 +1,29 @@
 import styled from 'styled-components';
 import background from '../../images/background.jpg'
 
-export const BgImage = styled.div`
+export const RightBgImage = styled.div`
     background-image: url(${background});
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-position: right 0; 
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 50%;
+    right: 0;
+    height: 100vh;
+    border-radius: 0px;
+    opacity: 0.8;
+`;
+export const FullBgImage = styled.div`
+    background-image: url(${background});
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-position: right 0; 
+    position: fixed;
+    top: 0;
+    left: 0;
     right: 0;
     height: 100vh;
     border-radius: 0px;

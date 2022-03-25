@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import cooking from '../../images/cooking.png'
 import { Link } from 'react-router-dom';
 import { NavContainer, LeftContainer, RightContainer, BurgerNav } from '../../css/Header/Header.js'
+import { Button } from '../../css/Common/Buttons.js'
 //import useClickOutside from '../../hooks/UseClickOutside.jsx';
 import SearchFoodName from "../Search/SearchFoodName.jsx"
 
@@ -17,7 +18,7 @@ const NavBar = () => {
                 <Link to="/">
                     <img src={cooking} alt="Dog" />
                 </Link>
-                <h1>Fodd 4 All</h1>
+                <h1>Food 4 All</h1>
             </LeftContainer>
             <SearchFoodName />
             <RightContainer ref={ref}>
@@ -25,12 +26,12 @@ const NavBar = () => {
                     <li><Link to="/">Home</Link></li>
                     <li><Link to="/proyect">Proyect</Link></li>
                     <li><Link to="/about">Contacts</Link></li>
-                    <li><a href="#" onClick={() => handleClickMenu()}>Menu</a></li>
+                    <li><Button onClick={() => handleClickMenu()}>Menu</Button></li>
                 </ul>
             </RightContainer>
             <BurgerNav show={openMenu} onFocusOut={() => alert('bye')}>
                 <div>
-                    <a type="button" onClick={() => handleClickMenu()}>Close (X)</a>
+                    <Button type="button" onClick={() => handleClickMenu()}>Close (X)</Button>
                 </div>
                 <ul>
                     <li><Link to="/">Home</Link></li>

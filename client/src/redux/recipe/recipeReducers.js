@@ -1,37 +1,52 @@
 import RECIPE_ACTIONS from './recipeTypes'
 
 const recipeState = {
-    recipeItems: [],
-    numberOfItems: 0,
+    recipes: [],
+    loading: "",
+    error: "",
+    numberOfRecipes: 0
 }
 
-/* 
-    const RECIPE_ACTIONS = {
-    ADD_RECIPE: 'ADD_RECIPE',
-    UPDATE_RECIPE: 'UPDATE_RECIPE',
-    REMOVE_RECIPE: 'REMOVE_RECIPE',
-    EMPTY_RECIPE: 'EMPTY_RECIPE'
-}
- */
 const recipeReducer = (state = recipeState, action) => {
-    console.log(action)
+    //console.log(action)
     const { type, payload } = action
     switch (type) {
-        case RECIPE_ACTIONS.ADD_TO_recipe:
+        case RECIPE_ACTIONS.FETCH_RECIPE_REQUEST:
+            return {
+                ...state,
+                loading: true,
+                error: ''
+            }
+        case RECIPE_ACTIONS.FETCH_RECIPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                recipes: payload,
+                numberOfRecipes: payload.length,
+                error: ''
+            }
+        case RECIPE_ACTIONS.FETCH_RECIPE_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                recipes: [],
+                error: action.payload
+            }
+        case RECIPE_ACTIONS.ADD_RECIPE:
             {
                 if (payload.itemsToBuy === 0) return state
-                if (state.recipeItems.length === 0) {
+                if (state.recipes.length === 0) {
                     return {
                         ...state,
-                        recipeItems: [payload],
-                        numberOfItems: parseInt(payload.itemsToBuy),
+                        recipes: [payload],
+                        numberOfRecipes: parseInt(payload.itemsToBuy),
                         totalPrice: parseFloat(payload.variantPrice) * parseInt(payload.itemsToBuy)
                     }
                 }
                 let oldQty = 0
                 let oldPrice = 0.0
                 let newPrice = parseFloat(payload.variantPrice) * parseFloat(payload.itemsToBuy)
-                const updatedrecipeItems = state.recipeItems.map(product => {
+                const updatedRecipes = state.recipes.map(product => {
                     const {
                         handle, title,
                         variantInventoryQty,
@@ -51,28 +66,28 @@ const recipeReducer = (state = recipeState, action) => {
                 }
                 )
                 const newTotal = parseFloat(state.totalPrice) + parseFloat(newPrice) - parseFloat(oldPrice)
-                const newQuantity = parseInt(state.numberOfItems) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
+                const newQuantity = parseInt(state.numberOfRecipes) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
                 if (oldQty === 0) {
                     return {
                         ...state,
-                        recipeItems: [...updatedrecipeItems, payload],
-                        numberOfItems: newQuantity,
+                        recipes: [...updatedRecipes, payload],
+                        numberOfRecipes: newQuantity,
                         totalPrice: newTotal
                     }
                 }
                 return {
                     ...state,
-                    recipeItems: updatedrecipeItems,
-                    numberOfItems: newQuantity,
+                    recipes: updatedRecipes,
+                    numberOfRecipes: newQuantity,
                     totalPrice: newTotal
                 }
             }
-        case RECIPE_ACTIONS.UPDATE_TO_recipe:
+        case RECIPE_ACTIONS.UPDATE_RECIPE:
             {
                 let oldQty = 0
                 let oldPrice = 0.0
                 let newPrice = parseFloat(payload.variantPrice) * parseFloat(payload.itemsToBuy)
-                const updatedrecipeItems = state.recipeItems.map(product => {
+                const updatedRecipes = state.recipes.map(product => {
                     const {
                         handle, title,
                         variantInventoryQty,
@@ -92,45 +107,37 @@ const recipeReducer = (state = recipeState, action) => {
                 }
                 )
                 const newTotal = parseFloat(state.totalPrice) + parseFloat(newPrice) - parseFloat(oldPrice)
-                const newQuantity = parseInt(state.numberOfItems) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
+                const newQuantity = parseInt(state.numberOfRecipes) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
                 if (oldQty === 0) {
                     return {
                         ...state,
-                        recipeItems: [...updatedrecipeItems, payload],
-                        numberOfItems: newQuantity,
+                        recipes: [...updatedRecipes, payload],
+                        numberOfRecipes: newQuantity,
                         totalPrice: newTotal
                     }
                 }
                 return {
                     ...state,
-                    recipeItems: updatedrecipeItems,
-                    numberOfItems: newQuantity,
+                    recipes: updatedRecipes,
+                    numberOfRecipes: newQuantity,
                     totalPrice: newTotal
                 }
             }
-
-        case RECIPE_ACTIONS.REMOVE_FROM_recipe:
+        case RECIPE_ACTIONS.REMOVE_RECIPE:
             {
-                const productToRemove = state.recipeItems.find(product => product.handle === payload.handle)
+                const productToRemove = state.recipes.find(product => product.handle === payload.handle)
                 const { itemsToBuy, variantPrice } = productToRemove
 
                 const newTotal = parseFloat(state.totalPrice) - parseFloat(itemsToBuy) * parseFloat(variantPrice)
-                const updatedrecipeItems = state.recipeItems.filter(product => product.handle !== payload.handle)
-                const newQuantity = parseInt(state.numberOfItems) - parseInt(itemsToBuy)
+                const updatedRecipes = state.recipes.filter(product => product.handle !== payload.handle)
+                const newQuantity = parseInt(state.numberOfRecipes) - parseInt(itemsToBuy)
 
                 return {
                     ...state,
-                    numberOfItems: newQuantity,
-                    recipeItems: updatedrecipeItems,
+                    numberOfRecipes: newQuantity,
+                    recipes: updatedRecipes,
                     totalPrice: newTotal
                 }
-            }
-
-        case RECIPE_ACTIONS.EMPTY_recipe:
-            return {
-                ...state,
-                recipeItems: [],
-                numberOfItems: 0
             }
         default: return state
     }

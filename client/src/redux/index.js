@@ -1,2 +1,2 @@
-export * from './cart/cartActions'
-export * from './product/productActions'
+export * from './diet/dietActions'
+export * from './recipe/recipeActions'

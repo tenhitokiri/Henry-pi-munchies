@@ -1,37 +1,41 @@
 import RECIPE_ACTIONS from './recipeTypes'
 import axios from 'axios';
+import { API } from '../../env.jsx';
 
-export const fetchProductsRequest = () => {
+
+export const fetchRecipesRequest = () => {
     return {
         type: RECIPE_ACTIONS.FETCH_RECIPE_REQUEST
     }
 }
 
-export const fetchProductsSuccess = (products) => {
+export const fetchRecipesSuccess = (recipes) => {
     return {
         type: RECIPE_ACTIONS.FETCH_RECIPE_SUCCESS,
-        payload: products
+        payload: recipes
     }
 }
 
-export const fetchProductsFailure = (error) => {
+export const fetchRecipesFailure = (error) => {
     return {
         type: RECIPE_ACTIONS.FETCH_RECIPE_FAILURE,
         payload: error
     }
 }
 
-export const fetchProducts = () => {
+export const fetchRecipes = () => {
     return (dispatch) => {
-        dispatch(fetchProductsRequest())
-        axios.get('https://staging.haciendola.dev/backend/test-front/api/products/')
+        dispatch(fetchRecipesRequest())
+        let api = API + 'recipes'
+        console.log(`fetchRecipes: ${api}`)
+        axios.get(api)
             .then(response => {
-                const products = response.data
-                dispatch(fetchProductsSuccess(products))
+                const recipes = response.data
+                dispatch(fetchRecipesSuccess(recipes))
             })
             .catch(error => {
                 const msg = error.message
-                dispatch(fetchProductsFailure(msg))
+                dispatch(fetchRecipesFailure(msg))
             })
     }
 }
