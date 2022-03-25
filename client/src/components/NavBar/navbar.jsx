@@ -1,16 +1,22 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import cooking from '../../images/cooking.png'
 import { Link } from 'react-router-dom';
 import { NavContainer, LeftContainer, RightContainer, BurgerNav } from '../../css/Header/Header.js'
 import { Button } from '../../css/Common/Buttons.js'
 //import useClickOutside from '../../hooks/UseClickOutside.jsx';
 import SearchFoodName from "../Search/SearchFoodName.jsx"
+import { fetchRecipes } from '../../redux'
+import { connect } from 'react-redux'
 
-const NavBar = () => {
+
+const NavBar = ({ fetchRecipes, recipeItems }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const handleClickMenu = () => setOpenMenu(!openMenu);
     const ref = useRef(null);
     //useClickOutside(ref, () => setOpenMenu(false));
+    useEffect(() => {
+        fetchRecipes()
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <NavContainer>
@@ -48,4 +54,17 @@ const NavBar = () => {
     )
 }
 
-export default NavBar
+//export default NavBar
+
+
+const mapStateToProps = state => ({
+    recipeItems: state.recipe.numberOfRecipes,
+    recipeList: state.recipe.recipes,
+    loading: state.recipe.loading,
+    error: state.recipe.error
+})
+
+const mapDispatchToProps = dispatch => ({
+    fetchRecipes: () => dispatch(fetchRecipes())
+})
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar)

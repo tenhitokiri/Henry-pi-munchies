@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { solidColor, foodColor70 } from '../Common/Theme';
+import { solidColor } from '../Common/Theme';
 
 export const RecipeCardStyle = styled.div`
     margin: 1em 1.5em;
@@ -45,7 +45,7 @@ export const CardBodyStyle = styled.div`
         font-size: 1.5em;
         font-weight: bold;
         text-shadow: 0px 0px 10px ${solidColor["color-1"]};
-        background-color: ${foodColor70["color-4"]};
+        background-color: ${solidColor["color-4-70"]};
     }
     h3 {
         position: relative;
@@ -90,7 +90,7 @@ export const CardBodyStyle = styled.div`
             margin: 0.2em;
             padding: 0.3em;
             border-radius: 10px;
-            background-color: ${foodColor70["color-1"]};
+            background-color: ${solidColor["color-1-70"]};
         }
     }
 `;
@@ -111,7 +111,7 @@ export const CardFooterStyle = styled.div`
         font-size: 1.5em;
         font-weight: bold;
         text-shadow: 0px 0px 10px ${solidColor["color-1"]};
-        background-color: ${foodColor70["color-4"]};
+        background-color: ${solidColor["color-4-70"]};
     }
 `;
 
@@ -120,13 +120,21 @@ export const RecipeListStyle = styled.div`
     height: 95%;
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-flow: row wrap;
     overflow: auto;
-    background-color: ${solidColor["color-5"]};
-    drop-shadow: 0px 0px 10px ${solidColor["color-1"]};
     border-radius: 10px;
-    box-shadow: 0px 0px 10px ${solidColor["color-1"]};
+    align-items: ${props => props.align || 'center'}; 
+
+    justify-content: ${props => props.justify || 'space-between'};
+    width: ${props => props.width ? props.width : "100%"};
+    min-height: ${props => props.height ? props.height : "auto"};
+    z-index: ${props => props.zIndex ? props.zIndex : "auto"};
+    background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
+    drop-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
+    box-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
+    margin: ${props => props.margin ? props.margin : "0"};
+    padding: ${props => props.padding ? props.padding : "0"};
+
     @media (max-width: 768px) {
         width: 100%;
     }
@@ -155,7 +163,7 @@ position: relative;
 display: flex;
 border-radius: 10px;
 flex-direction: ${props => props.direction ? props.direction : 'column'};
-align-items: ${props => props.align || 'center'}; ;
+align-items: ${props => props.align || 'center'}; 
 justify-content: ${props => props.justify || 'space-between'};
 width: ${props => props.width ? props.width : "100%"};
 min-height: ${props => props.height ? props.height : "auto"};

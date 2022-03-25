@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Containers.js'
 import { DivButton } from '../../css/Common/Buttons.js';
 import { Link } from 'react-router-dom';
-
-//redux
-import { connect } from 'react-redux'
-import { fetchRecipes } from '../../redux'
 
 //Imagenes
 import { RightBgImage } from '../../css/Body/Images.js';
@@ -14,15 +10,7 @@ import alexander_mils_6 from '../../images/alexander_mils_6.jpg'
 import alexander_schimmeck_6 from '../../images/alexander_schimmeck_6.jpg'
 import heather_ford_1 from '../../images/heather_ford_1.jpg'
 
-const Home = ({ fetchRecipes, recipeItems }) => {
-    const [recipesQty, setRecipesQty] = useState(0)
-    useEffect(() => {
-        fetchRecipes()
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        setRecipesQty(recipeItems)
-    }, [recipeItems])
-
+const Home = () => {
     const LeftContainer = BoxContainer;
     const RightContainer = BoxContainer;
     const ImagesContainer = BoxContainer;
@@ -42,7 +30,7 @@ const Home = ({ fetchRecipes, recipeItems }) => {
                 <HeroContainer width="90%" height="30%" bg="color-1" align="center" justify="center">
                     <DivButton primary="true" height="50px" width="250px" bg="color-3" color="color-6" fontSize="2rem">
                         <Link to="/recipes">
-                            Lets GO!! ({recipesQty})
+                            Lets GO!!
                         </Link>
                     </DivButton>
                 </HeroContainer>
@@ -61,16 +49,4 @@ const Home = ({ fetchRecipes, recipeItems }) => {
     )
 }
 
-//export default Home
-
-const mapStateToProps = state => ({
-    recipeItems: state.recipe.numberOfRecipes,
-    recipeList: state.recipe.recipes,
-    loading: state.recipe.loading,
-    error: state.recipe.error
-})
-
-const mapDispatchToProps = dispatch => ({
-    fetchRecipes: () => dispatch(fetchRecipes())
-})
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default Home

@@ -131,6 +131,7 @@ const getAllRecipes = async (_, res) => {
             name: recipe.name,
             diets: recipe.diets,
             image: recipe.image,
+            healthScore: recipe.healthScore,
             imported: recipe.imported
         }
     })
