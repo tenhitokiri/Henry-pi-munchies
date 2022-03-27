@@ -2,9 +2,11 @@ import RECIPE_ACTIONS from './recipeTypes'
 
 const recipeState = {
     recipes: [],
+    foundRecipes: [],
     loading: "",
     error: "",
-    numberOfRecipes: 0
+    numberOfRecipes: 0,
+    numberOfFoundRecipes: 0
 }
 
 const recipeReducer = (state = recipeState, action) => {
@@ -23,6 +25,14 @@ const recipeReducer = (state = recipeState, action) => {
                 loading: false,
                 recipes: payload,
                 numberOfRecipes: payload.length,
+                error: ''
+            }
+        case RECIPE_ACTIONS.FETCH_RECIPE_ID_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                foundRecipes: payload,
+                numberOffoundRecipes: payload.length,
                 error: ''
             }
         case RECIPE_ACTIONS.FETCH_RECIPE_FAILURE:

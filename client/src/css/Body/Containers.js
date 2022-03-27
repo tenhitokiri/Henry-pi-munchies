@@ -9,7 +9,8 @@ export const RecipeCardStyle = styled.div`
     height: 500px;
     display: flex;
     flex-direction: column;
-    background-color: ${solidColor["color-5"]};
+    background-color: ${solidColor["color-1-70"]};
+    background-color: ${solidColor["color-6"]};
     drop-shadow: 0px 0px 10px ${solidColor["color-1"]};
     border-radius: 10px;
     box-shadow: 0px 0px 10px ${solidColor["color-1"]};
@@ -80,7 +81,7 @@ export const CardBodyStyle = styled.div`
         border-radius: 0 0 10px 10px;
     }
     ul {
-        top: -50px;
+        top: ${props => props.ulTop || "-50px"};
         position: relative;
         display: flex;
         flex-flow: row wrap;
@@ -90,7 +91,7 @@ export const CardBodyStyle = styled.div`
             margin: 0.2em;
             padding: 0.3em;
             border-radius: 10px;
-            background-color: ${solidColor["color-1-70"]};
+            background-color: ${props => solidColor[props.ulColor] || solidColor["color-1-70"]};
         }
     }
 `;
@@ -116,18 +117,30 @@ export const CardFooterStyle = styled.div`
 `;
 
 export const RecipeListStyle = styled.div`
-    width: 100%;
-    height: 95%;
     display: flex;
     align-items: center;
     flex-flow: row wrap;
     overflow: auto;
+    scroll-bar: thin;
+    scroll-color: ${solidColor["color-1"]} "transparent";
+    ::-webkit-scrollbar {
+        width: 1vw;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: "transparent";
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: ${solidColor["color-6-70"]};
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: ${solidColor["color-6"]};
+    }
     border-radius: 10px;
     align-items: ${props => props.align || 'center'}; 
 
     justify-content: ${props => props.justify || 'space-between'};
     width: ${props => props.width ? props.width : "100%"};
-    min-height: ${props => props.height ? props.height : "auto"};
+    height: ${props => props.height ? props.height : "auto"};
     z-index: ${props => props.zIndex ? props.zIndex : "auto"};
     background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
     drop-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};

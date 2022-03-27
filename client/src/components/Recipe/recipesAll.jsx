@@ -3,7 +3,7 @@ import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Con
 import { PaginationNumbers } from '../../css/Body/Common.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import { SearchForm } from '../../css/Common/Search.js'
-import RecipesPaging from './recipePaging.jsx'
+import RecipesList from './recipeList.jsx'
 
 //redux
 import { connect } from 'react-redux'
@@ -13,7 +13,7 @@ const SearchContainer = BoxContainer;
 const PaginationContainer = BoxContainer;
 
 
-const Recipes = ({ recipeList, recipeItems }) => {
+const AllRecipes = ({ recipeList, recipeItems }) => {
     const [search, setSearch] = useState('')
     const [order, setOrder] = useState('')
 
@@ -23,16 +23,7 @@ const Recipes = ({ recipeList, recipeItems }) => {
 
     let orderedRecipes = search.length === 0 ? recipeList :
         recipeList.filter(recipe => recipe.name.toLowerCase().includes(search.toLowerCase()))
-    /* 
-        let orderOptions = {
-            'nameAsc': orderedRecipes.sort((a, b) => orderBy(a.name.toLowerCase(), b.name.toLowerCase())),
-            'nameDesc': orderedRecipes.sort((a, b) => orderBy(b.name.toLowerCase(), a.name.toLowerCase())),
-            'scoreAsc': orderedRecipes.sort((a, b) => orderBy(a.score, b.score)),
-            'scoreDesc': orderedRecipes.sort((a, b) => orderBy(b.score, a.score)),
-        }
-        orderedRecipes = orderOptions[order] || orderedRecipes;
-        console.log(orderOptions[order])
-         */
+
     switch (order) {
         case 'nameAsc':
             orderedRecipes = orderedRecipes.sort((a, b) => orderBy(a.name.toLowerCase(), b.name.toLowerCase()))
@@ -73,7 +64,7 @@ const Recipes = ({ recipeList, recipeItems }) => {
                         key={number}
                         id={number}
                     >
-                        <span>{(number)}</span>
+                        <span>{number}</span>
                     </li>)
             } else {
                 return (
@@ -93,45 +84,44 @@ const Recipes = ({ recipeList, recipeItems }) => {
     const indexOfFirstRecipe = indexOfLastRecipe - itemsPerPage;
     const currentRecipes = orderedRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
 
-    const prevHandler = () => {
-        if (currentPage >= minPageNumberLimit && currentPage > 1) {
-            setCurrentPage(currentPage - 1)
-            //currentPage - 1 < totalPages - 5 ? setMinPageNumberLimit(totalPages - 5) : setMinPageNumberLimit(currentPage - 1)
-            setMinPageNumberLimit(currentPage - 1)
-            setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
-        }
-    }
-    const nextHandler = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1)
-            setMinPageNumberLimit(minPageNumberLimit + 1)
-            /*             if (currentPage + 1 <= maxPageNumberLimit) {
-                            minPageNumberLimit + pageNumberLimit < totalPages ? setMaxPageNumberLimit(maxPageNumberLimit + 1) : setMaxPageNumberLimit(totalPages)
-                        }
-             */
-            setMaxPageNumberLimit(maxPageNumberLimit + 1)
-        }
-    }
-    /* 
-        const prevHandler = () => {
-            if (currentPage >= 1) {
+    /*     const prevHandler = () => {
+            if (currentPage >= minPageNumberLimit && currentPage > 1) {
                 setCurrentPage(currentPage - 1)
-                if (currentPage - 1 < minPageNumberLimit) {
-                    setMinPageNumberLimit(currentPage - 1)
-                    setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
-                }
+                //currentPage - 1 < totalPages - 5 ? setMinPageNumberLimit(totalPages - 5) : setMinPageNumberLimit(currentPage - 1)
+                setMinPageNumberLimit(currentPage - 1)
+                setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
             }
         }
         const nextHandler = () => {
-            if (currentPage >= 1) {
+            if (currentPage < totalPages) {
                 setCurrentPage(currentPage + 1)
-                if (currentPage === maxPageNumberLimit) {
-                    setMinPageNumberLimit(minPageNumberLimit + 1)
-                    setMaxPageNumberLimit(maxPageNumberLimit + 1)
+                setMinPageNumberLimit(minPageNumberLimit + 1)
+                if (currentPage + 1 <= maxPageNumberLimit) {
+                    minPageNumberLimit + pageNumberLimit < totalPages ? setMaxPageNumberLimit(maxPageNumberLimit + 1) : setMaxPageNumberLimit(totalPages)
                 }
+    
+                setMaxPageNumberLimit(maxPageNumberLimit + 1)
             }
         }
      */
+    const prevHandler = () => {
+        if (currentPage >= 1) {
+            setCurrentPage(currentPage - 1)
+            if (currentPage - 1 < minPageNumberLimit) {
+                setMinPageNumberLimit(currentPage - 1)
+                setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
+            }
+        }
+    }
+    const nextHandler = () => {
+        if (currentPage >= 1) {
+            setCurrentPage(currentPage + 1)
+            if (currentPage === maxPageNumberLimit) {
+                setMinPageNumberLimit(minPageNumberLimit + 1)
+                setMaxPageNumberLimit(maxPageNumberLimit + 1)
+            }
+        }
+    }
     //End of pagination stuff
 
     return (
@@ -142,7 +132,7 @@ const Recipes = ({ recipeList, recipeItems }) => {
                     <TittleContainer justify="center" align="center" bg="color-40">
                         <h2>Recipes</h2>
                     </TittleContainer>
-                    <SearchContainer justify="center" align="center" bg="color-30">
+                    <SearchContainer justify="flex-end" align="flex-end" bg="color-3" >
                         <SearchForm>
                             <input
                                 name="search"
@@ -159,8 +149,6 @@ const Recipes = ({ recipeList, recipeItems }) => {
                             <option value="scoreAsc">Score Ascending</option>
                             <option value="scoreDesc">Score Descending</option>
                         </select>
-
-                        {order}
                     </SearchContainer>
                     <PaginationContainer justify="space-around" align="center" bg="color-50">
                         <PaginationNumbers>
@@ -173,7 +161,7 @@ const Recipes = ({ recipeList, recipeItems }) => {
                         </PaginationNumbers>
                     </PaginationContainer>
                 </HeaderContainer>
-                <RecipesPaging recipeList={currentRecipes} />
+                <RecipesList recipeList={currentRecipes} />
             </MainContainer>
         </>
     )
@@ -191,4 +179,4 @@ const mapDispatchToProps = dispatch => ({
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Recipes)
  */
-export default connect(mapStateToProps)(Recipes)
+export default connect(mapStateToProps)(AllRecipes)

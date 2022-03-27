@@ -1,7 +1,8 @@
 import NavBar from './components/NavBar/navbar.jsx';
 import Home from './components/Home/home.jsx';
 import About from './components/Home/about.jsx';
-import Recipes from './components/Recipe/recipes.jsx';
+import AllRecipes from './components/Recipe/recipesAll.jsx';
+import RecipeDetails from './components/Recipe/recipeDetails.jsx';
 import { Route, Routes } from 'react-router-dom';
 import { AppContainer } from './css/Body/Containers.js';
 
@@ -12,7 +13,8 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/recipes" element={<Recipes />} />
+        <Route exact path="/recipes" element={<AllRecipes />} />
+        <Route path="/recipes/:id" element={<RecipeDetails />} />
       </Routes>
     </AppContainer>
   );
