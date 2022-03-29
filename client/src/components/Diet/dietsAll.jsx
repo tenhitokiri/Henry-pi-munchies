@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Containers.js'
 import { PaginationNumbers } from '../../css/Body/Common.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import { SearchForm } from '../../css/Common/Search.js'
 import DietsList from './dietList.jsx'
 import { trimInput, orderBy } from '../../utils/'
+import { deleteDiet, fetchDiets } from '../../redux'
 
 //redux
 import { connect } from 'react-redux'
@@ -13,8 +14,20 @@ const TittleContainer = BoxContainer;
 const SearchContainer = BoxContainer;
 const PaginationContainer = BoxContainer;
 
+const AllDiets = ({ dietList, fetchDiets, deleteDiet }) => {
+    const handleDelete = (diet) => {
+        if (window.confirm(`Delete ${diet.name}`)) {
+            deleteDiet(diet)
+        }
 
-const AllDiets = ({ dietList, dietItems }) => {
+    }
+    useEffect(() => {
+        //fetchDiets()
+        /*         return () => {
+                    console.log(`unmounting`)
+                } */
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     const [search, setSearch] = useState('')
     const [order, setOrder] = useState('')
 
@@ -98,7 +111,7 @@ const AllDiets = ({ dietList, dietItems }) => {
     return (
         <>
             <FullBgImage />
-            <MainContainer justify="flex-start" align="center" height="100%" shadow="color-1">
+            <MainContainer justify="flex-start" align="center" height="90%" shadow="color-1">
                 <HeaderContainer height="2vh" fontColor="color-7" justify="space-between" bg="color-1" direction="row">
                     <TittleContainer justify="center" align="center" bg="color-40">
                         <h2>Diets</h2>
@@ -133,7 +146,7 @@ const AllDiets = ({ dietList, dietItems }) => {
                         </PaginationNumbers>
                     </PaginationContainer>
                 </HeaderContainer>
-                <DietsList dietList={currentDiets} />
+                <DietsList dietList={currentDiets} handleDelete={handleDelete} />
             </MainContainer>
         </>
     )
@@ -143,5 +156,9 @@ const mapStateToProps = state => ({
     dietList: state.diet.dietItems,
     dietItems: state.diet.numberOfItems,
 })
+const mapDispatchToProps = dispatch => ({
+    fetchDiets: () => dispatch(fetchDiets()),
+    deleteDiet: (diet) => dispatch(deleteDiet(diet)),
+})
 
-export default connect(mapStateToProps)(AllDiets)
+export default connect(mapStateToProps, mapDispatchToProps)(AllDiets)

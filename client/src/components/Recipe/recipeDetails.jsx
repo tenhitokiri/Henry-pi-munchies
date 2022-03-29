@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { MainContainer, BoxContainer, HeaderContainer, CardBodyStyle } from '../../css/Body/Containers.js'
+import { MainContainer, BoxContainer, HeaderContainer, CardBodyStyle, FooterContainer } from '../../css/Body/Containers.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import ImageCard from '../Common/image.jsx'
+import { Link } from 'react-router-dom'
 
 import { fetchRecipeById } from '../../redux'
 import { connect } from 'react-redux'
@@ -27,7 +28,7 @@ const RecipeDetails = ({ fetchRecipeById, foundRecipes, loading, error }) => {
         const stepValues = Object.values(step)
         return (
             <div>
-                <h3>{step["name"]}</h3>
+                <h3>{stepValues}</h3>
             </div>
         )
     }
@@ -40,46 +41,46 @@ const RecipeDetails = ({ fetchRecipeById, foundRecipes, loading, error }) => {
             <MainContainer align="center" height="100%" shadow="color-1" direction="row">
                 {loading && <div>Loading...</div>}
                 {error && <div>Error: {error}</div>}
-                {recipe && <>
-                    <ImageCard src={recipe.image} alt="heather_ford_1" height='90vh' width='65vw' />
-                    <BoxContainer height="30%" justify="flex-start" bg="color-1-70" padding="1rem">
-                        <HeaderContainer height="20%" fontColor="color-7" justify="center" >
-                            {<h1>{recipe.name}</h1>}
-
-                        </HeaderContainer>
-                        <BoxContainer fontColor="color-7" bg="color-3-700" margin="1rem" direction="row" justify="space-around">
-                            <div>
-                                Health Sore: {recipe.healthScore}
-                            </div>
-                            <div>
-                                Spoonacular Score: {recipe.spoonacularScore}
-                            </div>
-                        </BoxContainer>
-                        <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
-                            {<h2>Summary:</h2>}
-                        </HeaderContainer>
-                        <BoxContainer fontColor="color-7" justify="flex-start" margin="1rem">
-                            {<div dangerouslySetInnerHTML={{ __html: recipe.summary }} />}
-                        </BoxContainer>
-                        <BoxContainer fontColor="color-7" justify="flex-start" bg="color-1-70">
-                            <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
-                                {<h2>Diets</h2>}
-                            </HeaderContainer>
-
-                            <CardBodyStyle ulTop="0" ulColor="color-4">
-                                <ul>
-                                    {diets}
-                                </ul>
-                            </CardBodyStyle>
-                        </BoxContainer>
-                        <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
-                            {<h2>Steps:</h2>}
-                        </HeaderContainer>
-                        <BoxContainer fontColor="color-7" justify="flex-start" margin="1rem">
-                            {<div dangerouslySetInnerHTML={{ __html: steps }} />}
-                        </BoxContainer>
+                <ImageCard src={recipe.image} alt="heather_ford_1" height='90vh' width='65vw' />
+                <BoxContainer height="30%" justify="flex-start" bg="color-1-70" padding="1rem">
+                    <HeaderContainer height="20%" fontColor="color-7" justify="center" >
+                        {<h1>{recipe.name}</h1>}
+                    </HeaderContainer>
+                    <BoxContainer fontColor="color-7" bg="color-3-700" margin="1rem" direction="row" justify="space-around">
+                        <div>
+                            Health Sore: {recipe.healthScore}
+                        </div>
+                        <div>
+                            Spoonacular Score: {recipe.spoonacularScore}
+                        </div>
                     </BoxContainer>
-                </>}
+                    <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
+                        {<h2>Summary:</h2>}
+                    </HeaderContainer>
+                    <BoxContainer fontColor="color-7" justify="flex-start" margin="1rem">
+                        {<div dangerouslySetInnerHTML={{ __html: recipe.summary }} />}
+                    </BoxContainer>
+                    <BoxContainer fontColor="color-7" justify="flex-start" bg="color-1-70">
+                        <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
+                            {<h2>Diets</h2>}
+                        </HeaderContainer>
+
+                        <CardBodyStyle ulTop="0" ulColor="color-4">
+                            <ul>
+                                {diets}
+                            </ul>
+                        </CardBodyStyle>
+                    </BoxContainer>
+                    <HeaderContainer fontColor="color-7" bg="color-3-70" margin="1rem">
+                        <h2>Steps:</h2>
+                    </HeaderContainer>
+                    <BoxContainer fontColor="color-7" justify="flex-start" margin="1rem">
+                        {<div dangerouslySetInnerHTML={{ __html: steps }} />}
+                    </BoxContainer>
+                    <FooterContainer fontColor="color-7" bg="color-3-70" margin="1rem">
+                        <Link to={`/recipes/edit/${recipe.id}`}>Edit</Link>
+                    </FooterContainer>
+                </BoxContainer>
             </MainContainer>
         </>
 

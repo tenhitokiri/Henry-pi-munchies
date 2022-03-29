@@ -19,6 +19,12 @@ const recipeReducer = (state = recipeState, action) => {
                 loading: true,
                 error: ''
             }
+        case RECIPE_ACTIONS.CLEAR_RECIPE_REQUEST:
+            return {
+                ...state,
+                foundRecipes: [],
+                numberOfFoundRecipes: 0
+            }
         case RECIPE_ACTIONS.FETCH_RECIPE_SUCCESS:
             return {
                 ...state,

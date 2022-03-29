@@ -185,8 +185,18 @@ z-index: ${props => props.zIndex ? props.zIndex : "auto"};
 background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
 drop-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
 box-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
-margin: ${props => props.margin ? props.margin : "0"};
+margin: ${props => props.margin ? props.margin : "0.5rem auto"};
 padding: ${props => props.padding ? props.padding : "0"};
+input {
+    position: relative;
+    width: 90%;
+    height: 3vh;
+    border: ${props => solidColor[props.inputBorder] ? solidColor[props.inputBorder] : "black"};
+    background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
+    &::placeholder {
+        color: ${solidColor["color-6"]};
+    }   
+}
 @media (max-width: 768px) {
     width: 100%;
 }
@@ -215,7 +225,7 @@ div {
     text-decoration: none;
 }
 h1 {
-    font-size: 4.5em;
+    font-size: ${props => props.fontSize ? props.fontSize : "4.5em"};
     font-weight: bold;
     color: ${props => solidColor[props.fontColor] ? solidColor[props.fontColor] : "white"};
     text-decoration: none;
@@ -238,14 +248,18 @@ p {
 export const FooterContainer = styled.div`
 position: sticky;
 display: flex;
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
 border-bottom: 1px solid ${solidColor["color-1"]};
 width: 100%;    
-height: 5vh;
 border-radius: 10px;
-background-color: ${solidColor["color-4"]};
+
+flex-direction: ${props => props.direction || 'row'};
+align-items: ${props => props.align || 'center'}; 
+justify-content: ${props => props.justify || 'center'};
+min-height: ${props => props.height ? props.height : "3vh"};
+background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
+drop-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
+box-shadow: ${props => solidColor[props.shadow] ? `0px 0px 10px ${solidColor[props.shadow]}` : '0px'};
+font-color: ${props => solidColor[props.fontColor] ? solidColor[props.fontColor] : "black"};
 div {
     display: flex;
     flex-direction: row;
@@ -253,6 +267,13 @@ div {
     justify-content: space-between;
     padding: 0 1em;
     text-decoration: none;
+}
+button {
+    font-size: 1em;
+    font-weight: bold;
+    color: ${props => solidColor[props.btnFontColor] ? solidColor[props.btnFontColor] : "red"};
+    text-decoration: none;
+    padding: 0 1em;
 }
 `;
 

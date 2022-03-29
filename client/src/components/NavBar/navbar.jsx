@@ -9,7 +9,7 @@ import { fetchRecipes, fetchDiets } from '../../redux'
 import { connect } from 'react-redux'
 
 
-const NavBar = ({ fetchRecipes, fetchDiets }) => {
+const NavBar = ({ fetchRecipes, fetchDiets, recipeList }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const handleClickMenu = () => setOpenMenu(!openMenu);
     const ref = useRef(null);
@@ -43,7 +43,7 @@ const NavBar = ({ fetchRecipes, fetchDiets }) => {
                 <ul>
                     <li><Link to="/">Home</Link></li>
                     <li><Link to="/recipes">Recipes</Link></li>
-                    <li><Link to="/add-recipe">Add Recipe</Link></li>
+                    <li><Link to="/recipes/add/">Add Recipe</Link></li>
                     <li><Link to="/diets">Diets</Link></li>
                     <li><Link to="/add-diet">Add a Diet</Link></li>
                     <li><Link to="/proyect">Proyect</Link></li>

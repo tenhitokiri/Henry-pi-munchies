@@ -33,7 +33,6 @@ export const fetchDiets = () => {
         axios.get(api)
             .then(response => {
                 const diets = response.data
-                console.log(`fetchDiets: ${diets.length} diets`)
                 dispatch(fetchDietsSuccess(diets))
             })
             .catch(error => {
@@ -150,8 +149,7 @@ export const deleteDiet = (diet) => {
         console.log(`deleting Diet with id ${diet.id} to: ${api}`)
         axios.delete(api, diet)
             .then(response => {
-                const diet = response.data
-                dispatch(deleteDietSuccess(diet))
+                dispatch(deleteDietSuccess(diet.id))
             })
             .catch(error => {
                 const msg = error.message

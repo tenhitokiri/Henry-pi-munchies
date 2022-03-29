@@ -4,6 +4,7 @@ import About from './components/Home/about.jsx';
 import AllRecipes from './components/Recipe/recipesAll.jsx';
 import AllDiets from './components/Diet/dietsAll.jsx';
 import RecipeDetails from './components/Recipe/recipeDetails.jsx';
+import RecipeForm from './components/Recipe/recipeForm.jsx';
 import { Route, Routes } from 'react-router-dom';
 import { AppContainer } from './css/Body/Containers.js';
 
@@ -17,6 +18,10 @@ function App() {
         <Route exact path="/recipes" element={<AllRecipes />} />
         <Route exact path="/diets" element={<AllDiets />} />
         <Route path="/recipes/:id" element={<RecipeDetails />} />
+        <Route path="/recipes/edit/:id" element={<RecipeForm />} />
+        <Route path="/recipes/add/" element={<RecipeForm />} />
+        <Route path="*" element={<Home />} />
+
       </Routes>
     </AppContainer>
   );

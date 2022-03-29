@@ -7,6 +7,11 @@ export const fetchRecipesRequest = () => {
         type: RECIPE_ACTIONS.FETCH_RECIPE_REQUEST
     }
 }
+export const clearRecipesRequest = () => {
+    return {
+        type: RECIPE_ACTIONS.CLEAR_RECIPE_REQUEST
+    }
+}
 
 export const fetchRecipesSuccess = (recipes) => {
     return {
@@ -33,7 +38,7 @@ export const fetchRecipes = () => {
     return (dispatch) => {
         dispatch(fetchRecipesRequest())
         let api = API + 'recipes'
-        console.log(`fetchRecipes: ${api}`)
+        //console.log(`fetchRecipes: ${api}`)
         axios.get(api)
             .then(response => {
                 const recipes = response.data
@@ -47,15 +52,15 @@ export const fetchRecipes = () => {
 }
 
 export const fetchRecipeById = (id) => {
-    console.log(`fetchRecipeById: ${id}`)
+    //console.log(`fetchRecipeById: ${id}`)
     return (dispatch) => {
         dispatch(fetchRecipesRequest())
         let api = API + 'recipes/' + id
-        console.log(`fetchRecipes: ${api}`)
+        //console.log(`fetchRecipes: ${api}`)
         axios.get(api)
             .then(response => {
                 const recipes = response.data
-                console.log(recipes)
+                //console.log(recipes)
                 dispatch(fetchRecipeByIdSuccess(recipes))
             })
             .catch(error => {
