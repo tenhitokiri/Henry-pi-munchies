@@ -15,13 +15,3 @@ router.put('/', updateRecipe);
 router.delete('/:id', deleteRecipe);
 
 module.exports = router;
-
-/* {
-    "name": "test",
-    "summary": "Un resumen de lo que hay que hacer",
-    "healthScore": 30,
-    "spoonacularScore": 45,
-    "steps": "a bunch of steps",
-    "image": "some pic address"
-    }
-     */

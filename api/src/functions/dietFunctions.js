@@ -6,6 +6,15 @@ const axios = require('axios');
 const recipeSlice = process.env.RECIPE_SLICE || 100;
 const URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=${recipeSlice}`;
 
+const validateDiet = ({ name }) => {
+    let error = {};
+    if (!name || name.length < 2) {
+        error.name = "Please provide a name (at least 2 characters)";
+    }
+    return error;
+}
+
+
 const uniqDiets = (Diet) => {
     let uniqDietList = [];
     if (Diet.diets) {
@@ -20,6 +29,7 @@ const uniqDiets = (Diet) => {
 }
 
 const populateDiets = async () => {
+    console.log(`populating diets`);
     let uniqDietList = [];
     let dietList = [];
     await axios
@@ -33,37 +43,58 @@ const populateDiets = async () => {
         .catch(error => {
             console.log(error);
         });
-    let dietsDb = await Diet.bulkCreate(uniqDietList.map(diet => {
-        return {
-            name: diet
+    try {
+        let dietsDb = await Diet.bulkCreate(uniqDietList.map(diet => {
+            return {
+                name: diet
+            }
         }
+        ))
+        console.log(`${dietsDb.length} diets created`);
     }
-    ));
+    catch (err) {
+        console.log(err);
+    }
 }
 
-const findDietById = async (req, res) => {
-    let diet = await Diet.findByPk(id);
-    diet = {
-        id: Diet.id,
-        name: Diet.name,
-    }
-    res.status(201).send(Diet);
-}
-
-const findAllDiets = async () => {
-    let diets = await Diet.findAll();
-    diets = diets.map(diet => {
-        return {
+const getDietById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        let diet = await Diet.findByPk(id);
+        let foundDiet = {
             id: diet.id,
-            name: diet.name
+            name: diet.name,
         }
-    })
-    return diets;
+        return res.status(201).send(foundDiet);
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+    }
 }
 
-const findDietNames = async (diets) => {
+const getAllDiets = async (_, res) => {
+    console.log(`looking for diets`);
+    try {
+        let diets = await Diet.findAll();
+        console.log(`found ${diets.length} diets`);
+        diets = diets.map(diet => {
+            return {
+                id: diet.id,
+                name: diet.name
+            }
+        })
+        return res.status(201).send(diets);
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(400).send(err);
+    }
+}
+
+const getDietByName = async (diets) => {
     let dietNames = [];
-    let allDietNames = await findAllDiets();
+    let allDietNames = await getAllDiets();
     diets.forEach(diet => {
         allDietNames.forEach(dietName => {
             if (diet === dietName.id) {
@@ -75,16 +106,19 @@ const findDietNames = async (diets) => {
 }
 
 const getDiets = async (req, res) => {
-    let diets = await findAllDiets();
+    let diets = await getAllDiets();
     res.status(201).send(diets);
 }
 
-const addDiet = async (req, res) => {
-    const {
-        name
-    } = req.body;
+const postDiet = async (req, res) => {
+    const newRecipe = {
+        name: req.body.name,
+    };
+    console.log(`name: ${newRecipe}`);
+    let validationErrors = validateDiet(newRecipe);
+    if (Object.keys(validationErrors).length > 0) return res.status(400).send(validationErrors)
     try {
-        let createdDiet = await Diet.create(name);
+        let createdDiet = await Diet.create(newRecipe);
         newDiet = {
             id: createdDiet.id,
             name: createdDiet.name
@@ -96,7 +130,7 @@ const addDiet = async (req, res) => {
     }
 }
 
-const updateDiet = async (req, res) => {
+const putDiet = async (req, res) => {
     const { name, id } = req.body;
     console.log(`name: ${name}`);
     console.log(`id: ${id}`);
@@ -122,11 +156,11 @@ const deleteDiet = async (req, res) => {
 module.exports = {
     uniqDiets,
     populateDiets,
-    findDietById,
-    findDietNames,
-    findAllDiets,
+    getDietById,
+    getDietByName,
+    getAllDiets,
     getDiets,
-    addDiet,
-    updateDiet,
+    postDiet,
+    putDiet,
     deleteDiet
 }
