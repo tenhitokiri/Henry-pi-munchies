@@ -5,17 +5,18 @@ import { NavContainer, LeftContainer, RightContainer, BurgerNav } from '../../cs
 import { Button } from '../../css/Common/Buttons.js'
 //import useClickOutside from '../../hooks/UseClickOutside.jsx';
 import SearchFoodName from "../Search/SearchFoodName.jsx"
-import { fetchRecipes } from '../../redux'
+import { fetchRecipes, fetchDiets } from '../../redux'
 import { connect } from 'react-redux'
 
 
-const NavBar = ({ fetchRecipes, recipeItems }) => {
+const NavBar = ({ fetchRecipes, fetchDiets }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const handleClickMenu = () => setOpenMenu(!openMenu);
     const ref = useRef(null);
     //useClickOutside(ref, () => setOpenMenu(false));
     useEffect(() => {
         fetchRecipes()
+        fetchDiets()
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
@@ -24,7 +25,7 @@ const NavBar = ({ fetchRecipes, recipeItems }) => {
                 <Link to="/">
                     <img src={cooking} alt="Dog" />
                 </Link>
-                <h1>Food 4 All</h1>
+                <h1>Food 4 All </h1>
             </LeftContainer>
             <SearchFoodName />
             <RightContainer ref={ref}>
@@ -60,11 +61,17 @@ const NavBar = ({ fetchRecipes, recipeItems }) => {
 const mapStateToProps = state => ({
     recipeItems: state.recipe.numberOfRecipes,
     recipeList: state.recipe.recipes,
-    loading: state.recipe.loading,
-    error: state.recipe.error
+    recipeLoading: state.recipe.loading,
+    recipeError: state.recipe.error,
+    diets: state.diet.dietItems,
+    dietItems: state.diet.numberOfItems,
+    dietList: state.diet.recipes,
+    dietLoading: state.diet.loading,
+    dietError: state.diet.error,
 })
 
 const mapDispatchToProps = dispatch => ({
-    fetchRecipes: () => dispatch(fetchRecipes())
+    fetchRecipes: () => dispatch(fetchRecipes()),
+    fetchDiets: () => dispatch(fetchDiets())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar)

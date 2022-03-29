@@ -38,20 +38,19 @@ export const CardHeaderStyle = styled.div`
 export const CardBodyStyle = styled.div`
     h2 {
         position: relative;
-        top: -25px;
+        top: -45px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: ${solidColor["color-5"]};
+        color: ${solidColor["color-6"]};
         font-size: 1.5em;
         font-weight: bold;
-        text-shadow: 0px 0px 10px ${solidColor["color-1"]};
-        background-color: ${solidColor["color-4-70"]};
+        text-shadow: 0px 0px 10px ${solidColor["color-7"]};
     }
     h3 {
         position: relative;
         padding: 0.5em;
-        top: -25px;
+        top: -35px;
         display: flex;
         align-items: center;    
         margin-bottom: 10px;
@@ -97,10 +96,12 @@ export const CardBodyStyle = styled.div`
 `;
 export const CardFooterStyle = styled.div`
     display: flex;
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    width: 95%;
     position: relative;
     bottom: 0;
+    padding: 0.5em;
+    justify-content: flex-end;
 
     h2 {
         position: relative;
@@ -113,7 +114,7 @@ export const CardFooterStyle = styled.div`
         font-weight: bold;
         text-shadow: 0px 0px 10px ${solidColor["color-1"]};
         background-color: ${solidColor["color-4-70"]};
-    }
+    }    
 `;
 
 export const RecipeListStyle = styled.div`

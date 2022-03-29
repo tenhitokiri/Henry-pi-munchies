@@ -3,7 +3,7 @@ import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Con
 import { PaginationNumbers } from '../../css/Body/Common.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import { SearchForm } from '../../css/Common/Search.js'
-import RecipesList from './recipeList.jsx'
+import DietsList from './dietList.jsx'
 import { trimInput, orderBy } from '../../utils/'
 
 //redux
@@ -14,25 +14,19 @@ const SearchContainer = BoxContainer;
 const PaginationContainer = BoxContainer;
 
 
-const AllRecipes = ({ recipeList }) => {
+const AllDiets = ({ dietList, dietItems }) => {
     const [search, setSearch] = useState('')
     const [order, setOrder] = useState('')
 
-    let orderedRecipes = search.length === 0 ? recipeList :
-        recipeList.filter(recipe => recipe.name.toLowerCase().includes(search.toLowerCase()))
+    let orderedDiets = search.length === 0 ? dietList :
+        dietList.filter(diet => diet.name.toLowerCase().includes(search.toLowerCase()))
 
     switch (order) {
         case 'nameAsc':
-            orderedRecipes = orderedRecipes.sort((a, b) => orderBy(a.name.toLowerCase(), b.name.toLowerCase()))
+            orderedDiets = orderedDiets.sort((a, b) => orderBy(a.name.toLowerCase(), b.name.toLowerCase()))
             break;
         case 'nameDesc':
-            orderedRecipes = orderedRecipes.sort((a, b) => orderBy(b.name.toLowerCase(), a.name.toLowerCase()))
-            break;
-        case 'scoreAsc':
-            orderedRecipes = orderedRecipes.sort((a, b) => orderBy(a.healthScore, b.healthScore))
-            break;
-        case 'scoreDesc':
-            orderedRecipes = orderedRecipes.sort((a, b) => orderBy(b.healthScore, a.healthScore))
+            orderedDiets = orderedDiets.sort((a, b) => orderBy(b.name.toLowerCase(), a.name.toLowerCase()))
             break;
         default:
             break;
@@ -46,7 +40,7 @@ const AllRecipes = ({ recipeList }) => {
     const [minPageNumberLimit, setMinPageNumberLimit] = useState(1)
 
     let pages = [];
-    const totalPages = Math.ceil(orderedRecipes.length / itemsPerPage);
+    const totalPages = Math.ceil(orderedDiets.length / itemsPerPage);
 
     for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -77,30 +71,10 @@ const AllRecipes = ({ recipeList }) => {
         else return null
     })
 
-    const indexOfLastRecipe = currentPage * itemsPerPage;
-    const indexOfFirstRecipe = indexOfLastRecipe - itemsPerPage;
-    const currentRecipes = orderedRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
+    const indexOfLastDiet = currentPage * itemsPerPage;
+    const indexOfFirstDiet = indexOfLastDiet - itemsPerPage;
+    const currentDiets = orderedDiets.slice(indexOfFirstDiet, indexOfLastDiet);
 
-    /*     const prevHandler = () => {
-            if (currentPage >= minPageNumberLimit && currentPage > 1) {
-                setCurrentPage(currentPage - 1)
-                //currentPage - 1 < totalPages - 5 ? setMinPageNumberLimit(totalPages - 5) : setMinPageNumberLimit(currentPage - 1)
-                setMinPageNumberLimit(currentPage - 1)
-                setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
-            }
-        }
-        const nextHandler = () => {
-            if (currentPage < totalPages) {
-                setCurrentPage(currentPage + 1)
-                setMinPageNumberLimit(minPageNumberLimit + 1)
-                if (currentPage + 1 <= maxPageNumberLimit) {
-                    minPageNumberLimit + pageNumberLimit < totalPages ? setMaxPageNumberLimit(maxPageNumberLimit + 1) : setMaxPageNumberLimit(totalPages)
-                }
-    
-                setMaxPageNumberLimit(maxPageNumberLimit + 1)
-            }
-        }
-     */
     const prevHandler = () => {
         if (currentPage >= 1) {
             setCurrentPage(currentPage - 1)
@@ -127,7 +101,7 @@ const AllRecipes = ({ recipeList }) => {
             <MainContainer justify="flex-start" align="center" height="100%" shadow="color-1">
                 <HeaderContainer height="2vh" fontColor="color-7" justify="space-between" bg="color-1" direction="row">
                     <TittleContainer justify="center" align="center" bg="color-40">
-                        <h2>Recipes</h2>
+                        <h2>Diets</h2>
                     </TittleContainer>
                     <SearchContainer justify="flex-end" align="flex-end" bg="color-3" >
                         <SearchForm>
@@ -139,12 +113,10 @@ const AllRecipes = ({ recipeList }) => {
                                 onChange={(e) => setSearch(e.target.value.trim())}
                             />
                         </SearchForm>
-                        <select name="order" onChange={(e) => setOrder(e.target.value)}>
+                        <select name="order" onChange={(e) => setOrder(trimInput(e.target.value))}>
                             <option value="">Order by...</option>
                             <option value="nameAsc">Name Ascending</option>
                             <option value="nameDesc">Name Descending</option>
-                            <option value="scoreAsc">Score Ascending</option>
-                            <option value="scoreDesc">Score Descending</option>
                         </select>
                     </SearchContainer>
                     <PaginationContainer justify="space-around" align="center" bg="color-50">
@@ -154,20 +126,22 @@ const AllRecipes = ({ recipeList }) => {
                             {renderPageNumbers}
                             <li onClick={nextHandler}>{">>"}</li>
                             <li onClick={() => setCurrentPage(totalPages)}>{">|"}</li>
-                            Page {currentPage} of {totalPages} (min: {minPageNumberLimit} max:{maxPageNumberLimit})
+                            <div>
+                                Page {currentPage} / {totalPages} ({orderedDiets.length} results)
+                            </div>
+
                         </PaginationNumbers>
                     </PaginationContainer>
                 </HeaderContainer>
-                <RecipesList recipeList={currentRecipes} />
+                <DietsList dietList={currentDiets} />
             </MainContainer>
         </>
     )
 }
 
 const mapStateToProps = state => ({
-    recipeList: state.recipe.recipes,
-    loading: state.recipe.loading,
-    error: state.recipe.error
+    dietList: state.diet.dietItems,
+    dietItems: state.diet.numberOfItems,
 })
 
-export default connect(mapStateToProps)(AllRecipes)
+export default connect(mapStateToProps)(AllDiets)

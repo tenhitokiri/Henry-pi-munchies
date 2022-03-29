@@ -34,7 +34,7 @@ export const Button = styled.button`
   width: ${props => props.width ? props.width : "auto"};
 
   font-size: 1rem;
-  margin: 1rem;
+  margin: 0.5rem;
   padding: 0.25rem 1rem;
   border: 2px solid ${props => solidColor[props.color] ? solidColor[props.color] : "transparent"};;
   border-radius: 3px;
@@ -43,7 +43,6 @@ export const Button = styled.button`
   font-weight: 600;
   text-transform: uppercase;
   align-items: center;
-  padding-right: 10px;
   text-decoration: none;
   &:hover {
     background: ${props => solidColor[props.color] ? solidColor[props.color] : "white"};

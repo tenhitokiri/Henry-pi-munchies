@@ -2,7 +2,6 @@ import RECIPE_ACTIONS from './recipeTypes'
 import axios from 'axios';
 import { API } from '../../env.jsx';
 
-
 export const fetchRecipesRequest = () => {
     return {
         type: RECIPE_ACTIONS.FETCH_RECIPE_REQUEST
@@ -46,6 +45,7 @@ export const fetchRecipes = () => {
             })
     }
 }
+
 export const fetchRecipeById = (id) => {
     console.log(`fetchRecipeById: ${id}`)
     return (dispatch) => {
