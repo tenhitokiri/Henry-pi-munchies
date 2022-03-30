@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MainContainer, BoxContainer, HeaderContainer } from '../../css/Body/Containers.js'
 import { PaginationNumbers } from '../../css/Body/Common.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import { SearchForm } from '../../css/Common/Search.js'
 import RecipesList from './recipeList.jsx'
 import { orderBy } from '../../utils/'
-import { deleteRecipe } from '../../redux'
+import { deleteRecipe, fetchDiets } from '../../redux'
 
 //redux
 import { connect } from 'react-redux'
@@ -16,9 +16,17 @@ const PaginationContainer = BoxContainer;
 
 
 
-const AllRecipes = ({ recipeList }) => {
+const AllRecipes = ({ recipeList, dietList, fetchDiets }) => {
+    useEffect(() => {
+        fetchDiets()
+        console.log("lista de dietas");
+        console.log(dietList)
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     const [search, setSearch] = useState('')
     const [order, setOrder] = useState('')
+    //const [diets, setDiets] = useState(dietList)
+    const [filterbyDiet, setFilterByDiet] = useState('')
 
     const handleDelete = (recipe) => {
         if (window.confirm(`Delete ${recipe.name}`)) {
@@ -128,6 +136,8 @@ const AllRecipes = ({ recipeList }) => {
     */
     //End of pagination stuff
 
+    let currentFilteredRecipes = filterbyDiet === "" ? currentRecipes : currentRecipes.filter(recipe => recipe.diets.includes(filterbyDiet))
+
     return (
         <>
             <FullBgImage />
@@ -153,6 +163,10 @@ const AllRecipes = ({ recipeList }) => {
                             <option value="scoreAsc">Score Ascending</option>
                             <option value="scoreDesc">Score Descending</option>
                         </select>
+                        <select name="dietFilter" id="dietFilter" onChange={(e) => setFilterByDiet(e.target.value)}>
+                            <option value="">Filter by diet...</option>
+                            {dietList.map(diet => <option key={diet.id} value={diet.name}>{diet.name}</option>)}
+                        </select>
                     </SearchContainer>
                     <PaginationContainer justify="space-around" align="center" bg="color-50">
                         <PaginationNumbers>
@@ -165,7 +179,11 @@ const AllRecipes = ({ recipeList }) => {
                         </PaginationNumbers>
                     </PaginationContainer>
                 </HeaderContainer>
-                <RecipesList recipeList={currentRecipes} handleDelete={handleDelete} />
+                <RecipesList recipeList={currentFilteredRecipes} handleDelete={handleDelete} />
+
+                {/* 
+                    <RecipesList recipeList={currentRecipes, currentFilteredRecipes} handleDelete={handleDelete} />
+                     */}
             </MainContainer>
         </>
     )
@@ -174,7 +192,14 @@ const AllRecipes = ({ recipeList }) => {
 const mapStateToProps = state => ({
     recipeList: state.recipe.recipes,
     loading: state.recipe.loading,
-    error: state.recipe.error
+    error: state.recipe.error,
+    dietList: state.diet.dietItems,
+    dietItems: state.diet.numberOfItems,
 })
 
-export default connect(mapStateToProps)(AllRecipes)
+const mapDispatchToProps = dispatch => ({
+    fetchDiets: () => dispatch(fetchDiets())
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(AllRecipes)
