@@ -5,15 +5,20 @@ import { FullBgImage } from '../../css/Body/Images.js';
 import ImageCard from '../Common/image.jsx'
 import { Link } from 'react-router-dom'
 
-import { fetchRecipeById } from '../../redux'
+import { fetchRecipeById, clearSearchedRecipes } from '../../redux'
 import { connect } from 'react-redux'
 
-const RecipeDetails = ({ fetchRecipeById, foundRecipes, loading, error }) => {
+const RecipeDetails = ({ fetchRecipeById, foundRecipes, loading, error, clearSearchedRecipes }) => {
     const { id } = useParams()
     const [recipe, setRecipe] = useState({})
     useEffect(() => {
         fetchRecipeById(id)
+        return () => {
+            console.log('clearing')
+            clearSearchedRecipes()
+        }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     useEffect(() => {
         if (foundRecipes) {
             setRecipe(foundRecipes)
@@ -22,18 +27,8 @@ const RecipeDetails = ({ fetchRecipeById, foundRecipes, loading, error }) => {
 
     const diets = recipe.diets ? recipe.diets.map((diet) => <li>{diet}</li>) : <li> No diets </li>
 
-    const steps = recipe.steps ? recipe.steps.map((step) => {
-        const stepKeys = Object.keys(step)
-        console.log(stepKeys)
-        const stepValues = Object.values(step)
-        return (
-            <div>
-                <h3>{stepValues}</h3>
-            </div>
-        )
-    }
-    ) : <li> No steps </li>
-
+    const steps = recipe.steps && recipe.steps.length > 0 ? recipe.steps : " No steps "
+    console.log(steps);
 
     return (
         <>
@@ -95,7 +90,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    fetchRecipeById: (id) => dispatch(fetchRecipeById(id))
+    fetchRecipeById: (id) => dispatch(fetchRecipeById(id)),
+    clearSearchedRecipes: () => dispatch(clearSearchedRecipes())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(RecipeDetails)
 

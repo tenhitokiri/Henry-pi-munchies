@@ -59,7 +59,6 @@ const NavBar = ({ fetchRecipes, fetchDiets, recipeList }) => {
 
 
 const mapStateToProps = state => ({
-    recipeItems: state.recipe.numberOfRecipes,
     recipeList: state.recipe.recipes,
     recipeLoading: state.recipe.loading,
     recipeError: state.recipe.error,

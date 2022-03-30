@@ -153,6 +153,18 @@ const deleteDiet = async (req, res) => {
         .catch(err => res.status(400).send(err));
 }
 
+const findDietNames = async (diets) => {
+    let dietNames = [];
+    let allDietNames = await Diet.findAll();;
+    diets.forEach(diet => {
+        allDietNames.forEach(dietName => {
+            if (diet.id === dietName.id) {
+                dietNames.push(dietName.name);
+            }
+        })
+    })
+    return dietNames;
+}
 module.exports = {
     uniqDiets,
     populateDiets,
@@ -162,5 +174,6 @@ module.exports = {
     getDiets,
     postDiet,
     putDiet,
-    deleteDiet
+    deleteDiet,
+    findDietNames
 }

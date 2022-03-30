@@ -14,3 +14,22 @@ export function isValidURL(string) {
 export const isNumberInRange = (number, range) => {
     return number >= range[0] && number <= range[1]
 }
+
+export const uniq = (list) => {
+    var seen = {};
+    return list.filter(function (item) {
+        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+    });
+}
+
+export const getDietByName = (dietList, allDietNames) => {
+    let dietNames = [];
+    dietList.forEach(diet => {
+        allDietNames.forEach(dietName => {
+            if (diet === dietName.id) {
+                dietNames.push({ name: dietName.name, id: dietName.id });
+            }
+        })
+    })
+    return dietNames;
+}

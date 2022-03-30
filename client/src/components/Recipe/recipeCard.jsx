@@ -20,8 +20,8 @@ const RecipeCard = ({ recipe }) => {
                 </ul>
             </CardBodyStyle>
             <CardFooterStyle >
-                <button>edit</button>
-                <button>delete</button>
+                <Link to={`/recipes/edit/${recipe.id}`}>Edit</Link>
+                {recipe.id < 900000 && <button>delete</button>}
             </CardFooterStyle>
 
         </RecipeCardStyle>

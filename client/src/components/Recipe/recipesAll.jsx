@@ -4,7 +4,8 @@ import { PaginationNumbers } from '../../css/Body/Common.js'
 import { FullBgImage } from '../../css/Body/Images.js';
 import { SearchForm } from '../../css/Common/Search.js'
 import RecipesList from './recipeList.jsx'
-import { trimInput, orderBy } from '../../utils/'
+import { orderBy } from '../../utils/'
+import { deleteRecipe } from '../../redux'
 
 //redux
 import { connect } from 'react-redux'
@@ -14,9 +15,16 @@ const SearchContainer = BoxContainer;
 const PaginationContainer = BoxContainer;
 
 
+
 const AllRecipes = ({ recipeList }) => {
     const [search, setSearch] = useState('')
     const [order, setOrder] = useState('')
+
+    const handleDelete = (recipe) => {
+        if (window.confirm(`Delete ${recipe.name}`)) {
+            deleteRecipe(recipe)
+        }
+    }
 
     let orderedRecipes = search.length === 0 ? recipeList :
         recipeList.filter(recipe => recipe.name.toLowerCase().includes(search.toLowerCase()))
@@ -81,26 +89,24 @@ const AllRecipes = ({ recipeList }) => {
     const indexOfFirstRecipe = indexOfLastRecipe - itemsPerPage;
     const currentRecipes = orderedRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
 
-    /*     const prevHandler = () => {
-            if (currentPage >= minPageNumberLimit && currentPage > 1) {
-                setCurrentPage(currentPage - 1)
-                //currentPage - 1 < totalPages - 5 ? setMinPageNumberLimit(totalPages - 5) : setMinPageNumberLimit(currentPage - 1)
-                setMinPageNumberLimit(currentPage - 1)
-                setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
-            }
+    const prevHandler = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1)
+            //currentPage - 1 < totalPages - 5 ? setMinPageNumberLimit(totalPages - 5) : setMinPageNumberLimit(currentPage - 1)
+            setMinPageNumberLimit(currentPage - 1)
+            setMaxPageNumberLimit(currentPage + pageNumberLimit - 1)
         }
-        const nextHandler = () => {
-            if (currentPage < totalPages) {
-                setCurrentPage(currentPage + 1)
+    }
+    const nextHandler = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1)
+            if (currentPage === maxPageNumberLimit) {
                 setMinPageNumberLimit(minPageNumberLimit + 1)
-                if (currentPage + 1 <= maxPageNumberLimit) {
-                    minPageNumberLimit + pageNumberLimit < totalPages ? setMaxPageNumberLimit(maxPageNumberLimit + 1) : setMaxPageNumberLimit(totalPages)
-                }
-    
                 setMaxPageNumberLimit(maxPageNumberLimit + 1)
             }
         }
-     */
+    }
+    /*
     const prevHandler = () => {
         if (currentPage >= 1) {
             setCurrentPage(currentPage - 1)
@@ -119,6 +125,7 @@ const AllRecipes = ({ recipeList }) => {
             }
         }
     }
+    */
     //End of pagination stuff
 
     return (
@@ -129,7 +136,7 @@ const AllRecipes = ({ recipeList }) => {
                     <TittleContainer justify="center" align="center" bg="color-40">
                         <h2>Recipes</h2>
                     </TittleContainer>
-                    <SearchContainer justify="flex-end" align="flex-end" bg="color-3" >
+                    <SearchContainer justify="flex-end" align="flex-end" bg="color-30" >
                         <SearchForm>
                             <input
                                 name="search"
@@ -154,11 +161,11 @@ const AllRecipes = ({ recipeList }) => {
                             {renderPageNumbers}
                             <li onClick={nextHandler}>{">>"}</li>
                             <li onClick={() => setCurrentPage(totalPages)}>{">|"}</li>
-                            Page {currentPage} of {totalPages} (min: {minPageNumberLimit} max:{maxPageNumberLimit})
+                            Page {currentPage} of {totalPages} ({orderedRecipes.length} recipes)
                         </PaginationNumbers>
                     </PaginationContainer>
                 </HeaderContainer>
-                <RecipesList recipeList={currentRecipes} />
+                <RecipesList recipeList={currentRecipes} handleDelete={handleDelete} />
             </MainContainer>
         </>
     )

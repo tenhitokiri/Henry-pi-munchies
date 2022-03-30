@@ -68,3 +68,19 @@ export const CloseButton = styled(Button)`
     background: red;
   }
 `;
+export const CheckedButton = styled(Button)`
+  background: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
+  color: white;
+  border: 2px solid white;
+  position: relative;
+  border-radius: 50%;
+  margin: 0;
+  width: 0.5em;
+  height: 0.5em;
+  justify-content: center;
+  align-items: center;
+  &:hover {
+    color: white;
+    background: red;
+  }
+`;

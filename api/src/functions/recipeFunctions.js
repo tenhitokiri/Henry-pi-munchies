@@ -44,12 +44,13 @@ const validateRecipe = ({ diets,
 
 }
 
-
 const trimApiRecipes = foundRecipes => {
     console.log(`found ${foundRecipes.data.results.length} recipes`);
     foundRecipes = foundRecipes.data.results.map(recipe => {
         let uniqDietList = uniqDiets(recipe);
         let id = parseInt(recipe.id) + 9000000
+        let steps = recipe.analyzedInstructions.map(instruction => instruction.steps.map(step => step.step));
+        steps = steps.map(step => step.join("\n"));
 
         let filteredRecipe = {
             id,
@@ -58,7 +59,7 @@ const trimApiRecipes = foundRecipes => {
             summary: recipe.summary,
             healthScore: recipe.healthScore,
             spoonacularScore: recipe.spoonacularScore,
-            steps: recipe.analyzedInstructions,
+            steps,
             image: recipe.image,
             imported: true
         }
@@ -149,13 +150,13 @@ const getRecipeById = async (req, res) => {
 }
 
 const getRecipeByName = async (req, res) => {
-    const name = req.params.name;
+    const name = req.body.name;
     if (name.length > 2) {
         console.log(`searching for ${req.body.name}`);
-        //let foundRecipes = await findRecipeByName(req.body.name);
+        let foundRecipes = await findRecipeByName(req.body.name);
         let allRecipes = await populateAllRecipes();
         allRecipes = allRecipes.filter(recipe => recipe.name.includes(req.body.name));
-        //allRecipes = [...allRecipes, ...foundRecipes];
+        allRecipes = [...allRecipes, ...foundRecipes];
         return res.status(201).send(allRecipes);
     }
     return res.status(400).send("Please provide a name (at least 2 characters)");
@@ -215,7 +216,17 @@ const updateRecipe = async (req, res) => {
         image
     } = req.body;
 
-    let validationErrors = validateRecipe(newRecipe);
+    let UpdatedRecipe = {
+        name,
+        summary,
+        healthScore,
+        spoonacularScore,
+        steps,
+        image,
+        imported: false
+    }
+
+    let validationErrors = validateRecipe(UpdatedRecipe);
     console.log(validationErrors);
     if (Object.keys(validationErrors).length > 0) return res.status(400).send(validationErrors)
 

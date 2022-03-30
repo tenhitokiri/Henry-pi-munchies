@@ -10,22 +10,28 @@ const recipeState = {
 }
 
 const recipeReducer = (state = recipeState, action) => {
-    //console.log(action)
     const { type, payload } = action
     switch (type) {
-        case RECIPE_ACTIONS.FETCH_RECIPE_REQUEST:
+        case RECIPE_ACTIONS.ACTION_RECIPES_REQUEST:
             return {
                 ...state,
                 loading: true,
                 error: ''
             }
-        case RECIPE_ACTIONS.CLEAR_RECIPE_REQUEST:
+        case RECIPE_ACTIONS.ACTION_RECIPES_FAILURE:
             return {
                 ...state,
+                loading: false,
+                error: action.payload
+            }
+        case RECIPE_ACTIONS.CLEAR_RECIPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
                 foundRecipes: [],
                 numberOfFoundRecipes: 0
             }
-        case RECIPE_ACTIONS.FETCH_RECIPE_SUCCESS:
+        case RECIPE_ACTIONS.FETCH_ALL_RECIPES_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -33,126 +39,59 @@ const recipeReducer = (state = recipeState, action) => {
                 numberOfRecipes: payload.length,
                 error: ''
             }
+        case RECIPE_ACTIONS.FETCH_A_RECIPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                foundRecipes: payload,
+                numberOfFoundRecipes: payload.length,
+                error: ''
+            }
         case RECIPE_ACTIONS.FETCH_RECIPE_ID_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 foundRecipes: payload,
-                numberOffoundRecipes: payload.length,
+                numberOfFoundRecipes: payload.length,
                 error: ''
             }
-        case RECIPE_ACTIONS.FETCH_RECIPE_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                recipes: [],
-                error: action.payload
-            }
-        case RECIPE_ACTIONS.ADD_RECIPE:
+        case RECIPE_ACTIONS.ADD_RECIPE_SUCCESS:
             {
-                if (payload.itemsToBuy === 0) return state
-                if (state.recipes.length === 0) {
-                    return {
-                        ...state,
-                        recipes: [payload],
-                        numberOfRecipes: parseInt(payload.itemsToBuy),
-                        totalPrice: parseFloat(payload.variantPrice) * parseInt(payload.itemsToBuy)
-                    }
+                return {
+                    ...state,
+                    loading: false,
+                    recipes: [...state.recipes, payload],
+                    numberOfRecipes: state.numberOfRecipes + 1,
+                    error: ''
                 }
-                let oldQty = 0
-                let oldPrice = 0.0
-                let newPrice = parseFloat(payload.variantPrice) * parseFloat(payload.itemsToBuy)
-                const updatedRecipes = state.recipes.map(product => {
-                    const {
-                        handle, title,
-                        variantInventoryQty,
-                        variantPrice, imageSrc, itemsToBuy
-                    } = product
-                    if (handle === payload.handle) {
-                        oldQty = parseInt(itemsToBuy)
-                        oldPrice = parseFloat(variantPrice) * parseFloat(oldQty)
-                        const updatedProd = {
-                            handle, title,
-                            variantInventoryQty,
-                            variantPrice, imageSrc, itemsToBuy: payload.itemsToBuy
-                        }
-                        return updatedProd
+            }
+        case RECIPE_ACTIONS.UPDATE_RECIPE_SUCCESS:
+            {
+                const updatedRecipes = state.recipes.map(recipe => {
+                    if (recipe.id === payload.id) {
+                        return payload
                     }
-                    return product
+                    return recipe
                 }
                 )
-                const newTotal = parseFloat(state.totalPrice) + parseFloat(newPrice) - parseFloat(oldPrice)
-                const newQuantity = parseInt(state.numberOfRecipes) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
-                if (oldQty === 0) {
-                    return {
-                        ...state,
-                        recipes: [...updatedRecipes, payload],
-                        numberOfRecipes: newQuantity,
-                        totalPrice: newTotal
-                    }
-                }
                 return {
                     ...state,
+                    loading: false,
                     recipes: updatedRecipes,
-                    numberOfRecipes: newQuantity,
-                    totalPrice: newTotal
+                    error: ''
+
                 }
             }
-        case RECIPE_ACTIONS.UPDATE_RECIPE:
+        case RECIPE_ACTIONS.DELETE_RECIPE_SUCCESS:
             {
-                let oldQty = 0
-                let oldPrice = 0.0
-                let newPrice = parseFloat(payload.variantPrice) * parseFloat(payload.itemsToBuy)
-                const updatedRecipes = state.recipes.map(product => {
-                    const {
-                        handle, title,
-                        variantInventoryQty,
-                        variantPrice, imageSrc, itemsToBuy
-                    } = product
-                    if (handle === payload.handle) {
-                        oldQty = parseInt(itemsToBuy)
-                        oldPrice = parseFloat(variantPrice) * parseFloat(oldQty)
-                        const updatedProd = {
-                            handle, title,
-                            variantInventoryQty,
-                            variantPrice, imageSrc, itemsToBuy: payload.itemsToBuy
-                        }
-                        return updatedProd
-                    }
-                    return product
-                }
-                )
-                const newTotal = parseFloat(state.totalPrice) + parseFloat(newPrice) - parseFloat(oldPrice)
-                const newQuantity = parseInt(state.numberOfRecipes) + parseInt(payload.itemsToBuy) - parseInt(oldQty)
-                if (oldQty === 0) {
-                    return {
-                        ...state,
-                        recipes: [...updatedRecipes, payload],
-                        numberOfRecipes: newQuantity,
-                        totalPrice: newTotal
-                    }
-                }
+                const updatedRecipes = state.recipes.filter(recipe => recipe.id !== payload.id)
                 return {
                     ...state,
+                    loading: false,
                     recipes: updatedRecipes,
-                    numberOfRecipes: newQuantity,
-                    totalPrice: newTotal
-                }
-            }
-        case RECIPE_ACTIONS.REMOVE_RECIPE:
-            {
-                const productToRemove = state.recipes.find(product => product.handle === payload.handle)
-                const { itemsToBuy, variantPrice } = productToRemove
+                    numberOfRecipes: state.numberOfRecipes - 1,
+                    error: ''
 
-                const newTotal = parseFloat(state.totalPrice) - parseFloat(itemsToBuy) * parseFloat(variantPrice)
-                const updatedRecipes = state.recipes.filter(product => product.handle !== payload.handle)
-                const newQuantity = parseInt(state.numberOfRecipes) - parseInt(itemsToBuy)
-
-                return {
-                    ...state,
-                    numberOfRecipes: newQuantity,
-                    recipes: updatedRecipes,
-                    totalPrice: newTotal
                 }
             }
         default: return state

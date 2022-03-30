@@ -19,7 +19,6 @@ const AllDiets = ({ dietList, fetchDiets, deleteDiet }) => {
         if (window.confirm(`Delete ${diet.name}`)) {
             deleteDiet(diet)
         }
-
     }
     useEffect(() => {
         //fetchDiets()

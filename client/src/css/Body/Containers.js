@@ -190,13 +190,21 @@ padding: ${props => props.padding ? props.padding : "0"};
 input {
     position: relative;
     width: 90%;
-    height: 3vh;
+    height: 2vh;
     border: ${props => solidColor[props.inputBorder] ? solidColor[props.inputBorder] : "black"};
     background-color: ${props => solidColor[props.bg] ? solidColor[props.bg] : "transparent"};
     &::placeholder {
         color: ${solidColor["color-6"]};
     }   
 }
+span {
+    position: relative;
+    top: 0.5em;
+    color: red;
+    font-size: 0.8em;
+    height: 2em;
+}
+
 @media (max-width: 768px) {
     width: 100%;
 }
