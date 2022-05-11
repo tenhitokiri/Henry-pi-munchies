@@ -1,4 +1,4 @@
-# Hubazar e-commerce
+# Henry Foods
 
 <p align="center">
   <img src="./henry-pi-home.png" />
